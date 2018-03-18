@@ -1,0 +1,76 @@
+.mypage {
+	margin-left:15px; 
+	margin-bottom:15px;
+}
+
+.mypage-info {
+	float:right;
+	margin:10px;
+}
+
+.myform-control {
+	width:180px;
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.mylink {
+	font-size:15px;
+	margin-left:10px;
+}
+
+.mylabel {
+	color : black;
+	font-weight : bold;
+}
+
+/*==============pagination================*/
+
+.mypagination {
+  text-align: left;
+  color: #ccc;
+  font-size: 15px;
+  -webkit-user-select: none;
+}
+.mypagination a {
+  color: #3d3d3d;
+  display: inline-block;
+  padding: 4px 12px;
+  border: 1px solid #ccc;
+  margin: 0 2px;
+  vertical-align: middle;
+}
+.mypagination a:hover {
+  text-decoration: none;
+  background-color: #ccc9c9;
+  border: 1px solid #ccc9c9;
+}
+.mypagination span {
+  margin: 0 10px;
+}
+.mypagination span.current {
+  display: inline-block;
+  padding: 4px 12px;
+  margin: 0 2px;
+  color: white;
+  background-color: #68dff0;
+  border: 1px solid #48bcb4;
+  vertical-align: middle;
+}
+.mypagination span.disabled {
+  cursor: not-allowed;
+  display: inline-block;
+  padding: 4px 12px;
+  margin: 0 2px;
+  color: #777;
+  background: white;
+  border: 1px solid #ccc;
+  vertical-align: middle;
+}

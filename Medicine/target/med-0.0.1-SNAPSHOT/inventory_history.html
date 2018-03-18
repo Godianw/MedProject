@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org" lang="zh_CN">
+<head th:replace="common/common_head::common_head('库存操作记录')"></head>
+<body>
+  <section id="container">
+
+    <!-- **********************************************************************************************************************************************************
+      TOP BAR CONTENT & NOTIFICATIONS
+    *********************************************************************************************************************************************************** -->
+    <!--header start-->
+    <header th:replace="common/layout::header"></header>
+    <!--header end-->
+
+
+    <!-- **********************************************************************************************************************************************************
+      MAIN SIDEBAR MENU
+    *********************************************************************************************************************************************************** -->
+    <!--sidebar start-->
+    <aside th:replace="common/layout::sidebar"></aside>
+    <!--sidebar end-->
+
+
+    <!-- **********************************************************************************************************************************************************
+      MAIN CONTENT
+    *********************************************************************************************************************************************************** -->
+    <!--main content start-->
+    
+    <section id="main-content">
+      <section class="wrapper">
+        <div class="row mt">
+          <div class="col-md-12">
+            <div class="content-panel">
+              <table id="tbl_inventory_history" width="100%" 
+              class="table table-striped table-advance table-hover">
+                <h4>
+                  <i class="fa fa-angle-right"></i>库存操作记录<hr>
+                </h4>
+                <h5>
+                  <a href="javascrpt:;" data-toggle="modal" 
+                    data-target="#filter" class="mylink">
+                    <i class="fa fa-filter fa-lg"></i> 筛选
+                  </a>
+                  <a href="javascript:;" data-toggle="modal"
+                    data-target="#export" class="mylink">
+                    <i class="fa fa-share-square-o fa-lg"></i> 导出
+                  </a>
+                  <a href="javascrpt:;" class="mylink"
+                    onclick="ih_refresh()">
+                    <i class="fa fa-refresh fa-lg"></i> 显示全部
+                  </a>
+                  <!--
+                  <a href="javascript:;" data-toggle="modal"
+                    data-target="#clean" class="mylink">
+                    <i class="fa fa-trash fa-lg"></i> 清空
+                  </a>
+                  -->
+                </h5>
+                <br />
+                <thead>
+                  <tr>
+                    <th class="hidden-phone">编号</th>
+                    <th>药品名称</th>
+                    <th>数量</th>
+                    <th>操作日期</th>
+                    <th>操作类型</th>
+                  </tr>
+                </thead>
+                <tbody>
+
+
+                </tbody>
+              </table>
+
+              <hr>
+   
+              
+              <div class="M-box m-style"></div> 
+            </div>
+            <!-- /content-panel -->
+          </div>
+          <!-- /col-md-12 -->
+        </div>
+        <!-- /row -->
+      </section>
+      <!--/wrapper -->
+    </section>
+
+    <!-- /MAIN CONTENT -->
+    <!--main content end-->
+
+    <!-- **********************************************************************************************************************************************************
+      MAIN FOOTER
+      *********************************************************************************************************************************************************** -->
+    <!--footer start-->
+    <footer th:replace="common/layout::footer"></footer>
+    <!--footer end-->
+  </section>
+  
+  <!-- Filter Modal -->
+  <div class="modal fade" id="filter" tabindex="-1" role="dialog"
+    aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"
+            aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel">筛选</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-panel">
+            <form class="form-horizontal style-form" id="form_filter">      
+              <!-- 药品名称 -->
+              <div class="form-group" style="padding-bottom:0px;">
+                <label class="col-sm-2 col-sm-2 control-label">药品名称</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" name="medName"
+                    placeholder="请输入药品名称包含的关键字" id="medName_filter">
+                </div>
+              </div>
+              
+              <!-- 操作日期 -->
+              <div class="form-group" style="padding-bottom:0px;">
+                <label class="col-sm-2 col-sm-2 control-label">操作日期</label>
+                <div class="col-sm-10">
+                  <input id="mydatepicker" type="text" name="time1"
+                  class="myform-control" style="width:150px;" 
+                  placeholder="起始日期">&nbsp;&nbsp;到 &nbsp;&nbsp;
+                  <input id="mydatepicker2" type="text" name="time2"
+                   class="myform-control" style="width:150px;" 
+                   placeholder="结束日期">
+                </div>
+              </div>
+              
+              <!-- 操作类型 -->
+              <div class="form-group" style="padding-bottom:0px;">
+                <label class="col-sm-2 col-sm-2 control-label">操作类型</label>
+                <div class="col-sm-10">
+                  <select class="myform-control" name="optype" id="optype_filter">
+                    <option value="">--请选择操作类型--</option>
+                    <option value="0">入库</option>
+                    <option value="1">出库</option>
+                  </select>
+                </div>
+              </div>
+              
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default"
+            data-dismiss="modal">关闭</button>
+          <button id="ih_filter" type="button" 
+            onclick="ih_filter()"
+            class="btn btn-primary">筛选</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Export Modal -->
+  <div class="modal fade" id="export" tabindex="-1" role="dialog"
+    aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"
+            aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel">选择导出方式</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-panel">
+            <form class="form-horizontal style-form" id="form_export">
+              <!-- 导出为PDF -->
+              <div class="form-group">
+                <label class="col-sm-5 control-label mylabel"> 
+                  <input type="radio" name="exportOptions" 
+                  id="pdf" value="pdf" checked> 
+                   PDF文件（*.pdf）
+                </label>
+                <div class="col-sm-7" style="padding-top:4px;">
+                  <label class="form-control-static">将表格导出到PDF文件中
+                  </label>
+                </div>
+              </div>
+              
+              <!-- 导出为EXCEL(*.xls) -->
+              <div class="form-group">
+                <label class="col-sm-5 control-label mylabel">
+                  <input type="radio" name="exportOptions"
+                  id="excel1" value="excel1"> 
+                   EXCEL文件（*.xls）
+                </label>
+                <div class="col-sm-7" style="padding-top:4px;">
+                  <label class="form-control-static">将表格导出到EXCEL（97-2003）文件中
+                  </label>
+                </div>
+              </div>
+
+              <!-- 导出为EXCEL(*.xlsx) -->
+              <div class="form-group">
+                <label class="col-sm-5 control-label mylabel">
+                  <input type="radio" name="exportOptions"
+                  id="excel2" value="excel2"
+                  > EXCEL文件（*.xlsx）
+                </label>
+                <div class="col-sm-7" style="padding-top:4px;">
+                  <label class="form-control-static">将表格导出到EXCEL（2007）文件中
+                  </label>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default"
+            data-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary"
+            onclick="exportToFile()">确定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Clean Modal 
+  <div class="modal fade" id="clean" tabindex="-1" role="dialog"
+    aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"
+            aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel">警告</h4>
+        </div>
+        <div class="modal-body">
+                              数据清空后将无法恢复，确定要清空吗？
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default"
+            data-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary"
+            onclick="ih_clean()">确定</button>
+        </div>
+      </div>
+    </div>
+  </div>  -->
+
+  <!-- common js -->
+  <div th:include="common/common_js::common_js" th:remove="tag"></div>
+
+  <!--script for this page-->
+  <script>
+      //custom select box
+	  
+      var table;
+      var condition = "";
+      $(function(){
+    	  // 初始化表格并获取api实例
+    	  table = $('#tbl_inventory_history').DataTable({
+    		  // 国际化
+    	     language: {
+    	    	url: "/med/common/language-zh-CN.txt",
+    		 },
+    		 /* dom */
+    		 dom: 'lrt<"pull-right"i>',	// 默认lfrtip
+    		 lengthMenu: [ [10, 25, 50, -1], [10, 25, 50, "所有"] ],
+    		 // 允许列排序
+    		 orderClasses: false,
+    		 // 禁用多列排序
+    	//	 orderMuti: true,
+    		 // 设置列排序顺序
+    		 order: [0, "desc"],
+    		 // 设置分页按钮样式
+    		 pagingType: "simple_numbers",
+    		 // 启用加载提示
+    		 processing: true,
+    		 // 启用服务器模式
+    		 serverSide: true,
+    		 // 数据来源（包括处理分页，排序，过滤） ，即url，action，接口，等等
+    		 ajax: {
+    			 url: '/med/inventory_history/data_source.do?pageNum=1',
+    			 type: 'POST',
+    			 // 降低columns[i][search][value]数组的维度
+    			 data : function(data) {  
+    				 for (var i = 0; i < data.columns.length; i++) {  
+    					 column = data.columns[i];  
+    					 column.searchRegex = column.search.regex;  
+    	                 column.searchValue = column.search.value;  
+    	                 delete(column.search); 
+    	             }   
+    	         },
+    			 // 操作服务端返回的数据
+    			 dataSrc: function (json) {
+    				 updatePage(json.pageNum, json.pageTotal);
+    				 return json.data;
+    			 },
+    		 },
+    		// 设置各列对应的数据列，并且禁用第四列和第六列的排序
+    		 columns: [ 
+    		 	{"data" : "id"}, 
+              	{"data" : "medName"}, 
+            	{"data" : "quantity"},
+            	{"data" : "time"},
+            	{"data" : "optype"}
+             ],
+           	 // 列渲染，可以添加一些操作等
+             columnDefs : [
+                {
+             		// 设置class
+                	targets: [0],
+             		className: "hidden-phone"
+             	},
+             	{
+             		// 禁用排序
+            		targets: [2],
+             		orderable: false
+             	},
+             	{
+             		// 渲染操作类型
+             		targets : 4,
+            	 	render : function(data, type, row) {
+            	 		if (data == true) {
+            	 			return "<i class=\"fa fa-arrow-up\""
+            	 			+ " style=\"color: #ec1717;\">出库</i>";
+            	 		} else if (data == false) {
+            	 			return "<i class=\"fa fa-arrow-down\""
+            	 			+ " style=\"color: #177917;\">入库</i>";
+            	 		}
+            	 	}
+             	}
+             ],
+    		 // 启用延迟渲染
+    		 deferRender: true,
+    		 // 延迟服务器加载数据直到第二次绘制，总记录数为15，过滤后记录数为10
+    		// deferLoading: [10, 15],
+    	  });
+ 		  
+    	  // 重绘表格时调整页脚
+          table.on( 'init.dt', function () {
+        	  positionFooter();
+          });
+          
+    	  // ajax数据加载完成时调整页脚
+          table.on( 'xhr.dt', function () {
+        	  positionFooter();
+          });
+    	  
+          // 重绘表格时调整页脚
+          table.on( 'draw.dt', function () {
+        	  positionFooter();
+          });
+      });
+      
+   	  // 初始化日期框
+      $('#mydatepicker').dcalendarpicker({
+  		 format:'yyyy/mm/dd'
+  	  }); 
+      $('#mydatepicker2').dcalendarpicker({
+  		 format:'yyyy/mm/dd'
+  	  });
+      
+      // 过滤
+      function ih_filter() {
+    	  
+    	  condition = "WHERE 1 = 1";
+    	  var medName = $('#medName_filter').val();
+    	  var time1 = $('#mydatepicker').val();
+    	  var time2 = $('#mydatepicker2').val();
+    	  var optype = $('#optype_filter').val();
+    	  // url中不能出现%，必须使用转义字符%25
+    	  if (medName != "" && medName != null) {
+    		  condition += " AND medName LIKE '%25" + medName + "%25'";
+    	  }
+    	  if (time1 != "" && time1 != null) {
+    		  condition += " AND time >= '" + time1 + "'";
+    	  }
+    	  if (time2 != "" && time2 != null) {
+    		  condition += " AND time <= '" + time2 + "'";
+    	  }
+    	  if (optype != "" && optype != null) {
+    		  condition += " AND optype = " + optype;
+    	  }
+    	  
+    	  var newUrl = '/med/inventory_history/data_source.do?pageNum=1&condition=' + condition;
+    	  table.ajax.url(newUrl).load();
+    	  
+    	  $('#filter').modal('hide');
+      }
+      
+      // 清空
+      function ih_clean() {
+    	  
+      }
+      
+   	  // 设置pdf选项为默认选项
+      $('#export').on('show.bs.modal', function () {
+    	  // 执行一些动作...
+    	  $('#pdf').attr("checked","checked");
+      });
+   	  
+   	  // 导出到文件中
+      function exportToFile() {
+    	  var val = $('input:radio[name="exportOptions"]:checked').val();
+    	  if (val == "pdf")
+    		window.location.href = "/med/inventory_history/toPdf.do?fileName=库存操作历史记录";
+    	  if (val == "excel1")
+        	window.location.href = "/med/inventory_history/toExcel.do?fileName=库存操作历史记录&suffix=xls";
+    	  if (val == "excel2")
+    	  	window.location.href = "/med/inventory_history/toExcel.do?fileName=库存操作历史记录&suffix=xlsx";
+    	  
+    	  // 隐藏模态框 
+    	  $('#export').modal('toggle');
+      }
+   	  
+      // 显示全部数据
+      function ih_refresh() {
+    	  
+    	  var newUrl = '/med/inventory_history/data_source.do?pageNum=1';
+    	  table.ajax.url(newUrl).load();
+      }
+   	  
+      function pageChange(pageNum) {
+    	
+    	  var newUrl = '/med/inventory_history/data_source.do?pageNum=' + pageNum;
+    	  if (condition != null && condition != "")
+    		  newUrl += "&condition = " + condition;
+    	  table.ajax.url(newUrl).load(function(json){
+      		// 这里的json返回的是服务器的数据
+      	  });
+      }
+  </script>
+</body>
+</html>

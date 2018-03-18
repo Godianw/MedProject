@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org" lang="zh_CN">
+<head th:replace="common/common_head::common_head('销售状况统计')"></head>
+<body>
+  <section id="container">
+  
+    <!-- **********************************************************************************************************************************************************
+      TOP BAR CONTENT & NOTIFICATIONS
+    *********************************************************************************************************************************************************** -->
+    <!--header start-->
+    <header th:replace="common/layout::header"></header>
+    <!--header end-->
+    
+    
+    <!-- **********************************************************************************************************************************************************
+      MAIN SIDEBAR MENU
+    *********************************************************************************************************************************************************** -->
+    <!--sidebar start-->
+    <aside th:replace="common/layout::sidebar"></aside>
+    <!--sidebar end-->
+    
+    
+    <!-- **********************************************************************************************************************************************************
+      MAIN CONTENT
+    *********************************************************************************************************************************************************** -->
+    <!--main content start-->
+    <section id="main-content">
+      <section class="wrapper">
+        <div class="row mt">
+          <div class="col-md-12">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                请选择统计方式：
+                <select onchange="change_salesCount()" 
+                  class="myform-control"
+                  id="salesCount_select">
+                  <option value="1">统计各月销售额</option>
+                  <option value="2">统计各年销售额</option>
+                </select>
+              </div>
+              
+              <br>  
+              <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+              <div id="main" style="width: 100%;height:400px;"></div>
+        
+            </div>
+            <!-- /content-panel -->
+          </div>
+          <!-- /col-md-12 -->
+        </div>
+        <!-- /row -->
+      </section>
+      <!--/wrapper -->
+    </section>
+    <!-- /MAIN CONTENT -->
+    <!--main content end-->
+    
+    
+    <!-- **********************************************************************************************************************************************************
+      MAIN FOOTER
+    *********************************************************************************************************************************************************** -->
+    <!--footer start-->
+    <footer th:replace="common/layout::footer"></footer>
+    <!--footer end-->
+  </section>
+  
+  <!-- common js -->
+  <div th:include="common/common_js::common_js" th:remove="tag"></div>
+  
+  <!--script for this page-->
+  <!-- echarts js -->
+  <script type="text/javascript" src="/med/echarts/js/echarts.js"></script>
+  
+  <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var salesChart = echarts.init(document.getElementById('main'));
+        
+        $(function() {
+			change_salesCount();
+		});
+        
+        function change_salesCount() {
+        	var select = $('#salesCount_select').val();
+        	salesChart.showLoading();	// 显示加载动画
+        	
+        	if (select == 1) {
+        		// 异步加载数据
+        		$.ajax({
+        			url: '/med/salesCount/monthInfo.do',
+        			type: 'POST',
+        			success: function(result) {
+        				
+        				var newOption = {
+            				title: {
+            		        	text: '各月销量情况统计图',		// 主标题
+            		       	},
+            		      	legend: {
+            					data: result.legend	
+            				},
+							tooltip : {
+								trigger : 'axis' // 提示框组件在坐标轴触发
+							},
+							toolbox : {
+								show : true, // 显示工具栏
+								feature : { // 配置工具
+									dataView : {show: true, readOnly: false},
+				                    magicType : {show: true, type: ['line', 'bar']},
+				                    restore : {show: true},
+				                    saveAsImage : {show: true}
+								}
+							},
+							xAxis : {
+								name : '月份', // 名称
+								nameLocation : 'end', // 位置
+								data : result.dimension
+							},
+							yAxis : {
+								name : '销售额', // 名称
+								nameLocation : 'end', // 位置
+							},
+							dataZoom : [{
+								// 这个dataZoom组件，默认控制x轴。
+								type : 'slider', // 这个 dataZoom 组件是 slider 型 dataZoom 组件
+								start : 10, // 左边在 10% 的位置。
+								end : 60
+								// 右边在 60% 的位置。
+							}],
+							series : []
+						}
+						salesChart.setOption(newOption, {
+							notMerge : true,  // 不融合旧数据
+							lazyUpdate: true, // 不立即更新
+						});
+
+						// 维度
+						var legend = result.legend;
+						var option = salesChart.getOption();
+						for (var i = 0; i < legend.length; ++i) {
+							var item = {
+								name : legend[i],
+								type : 'line',
+								data : (result.dataSource)[i],
+								markPoint : {
+									data : [ {
+										type : 'max',
+										name : '最大值'
+									}, {
+										type : 'min',
+										name : '最小值'
+									} ]
+								},
+								markLine : {
+									data : [ {
+										type : 'average',
+										name : '平均值'
+									} ]
+								}
+							};
+							option.series.push(item);
+						}
+						salesChart.setOption(option, {
+							lazyUpdate: false  // 立即更新
+						});
+							
+						salesChart.hideLoading();
+					},
+					error : function() {
+						console.log("服务器错误，月份销售信息获取失败");
+					}
+
+				});
+			}
+			if (select == 2) {
+				// 异步加载数据
+				$.ajax({
+					url : '/med/salesCount/yearInfo.do',
+					type : 'POST',
+					success : function(result) {
+						var newOption = {
+							title : {
+								text : '各年销量情况统计图', // 主标题
+							},
+							legend : {
+								data : [result.legend]
+							},
+							toolbox : {
+								show : true, // 显示工具栏
+								feature : { // 配置工具
+									dataView : {show: true, readOnly: false},
+				                    magicType : {show: true, type: ['line', 'bar']},
+				                    restore : {show: true},
+				                    saveAsImage : {show: true}
+								}
+							},
+							xAxis : {
+								name : '年份', // 名称
+								nameLocation : 'end', // 位置
+								data : result.dimension
+							},
+							yAxis : {
+								name : '销售额', // 名称
+								nameLocation : 'end', // 位置
+							},
+							dataZoom: [{
+								// 这个dataZoom组件，默认控制x轴。
+								type : 'slider', // 这个 dataZoom 组件是 slider 型 dataZoom 组件
+								start : 10, // 左边在 10% 的位置。
+								end : 60
+							// 右边在 60% 的位置。
+							}],
+							series : []	
+						}
+							
+						salesChart.setOption(newOption, {
+							notMerge: true,
+							lazyUpdate: true
+						});
+
+						// 维度
+						var legend = result.legend;
+						var option = salesChart.getOption();
+						var item = {
+							name : legend,
+							type : 'line',
+							data : result.dataSource,
+							markPoint : {
+								data : [ {
+									type : 'max',
+									name : '最大值'
+								}, {
+									type : 'min',
+									name : '最小值'
+								} ]
+							},
+							markLine : {
+								data : [ {
+									type : 'average',
+									name : '平均值'
+								} ]
+							}
+						};
+						option.series.push(item);
+
+						salesChart.setOption(option, {
+							lazyUpdate: false
+						});
+							
+						salesChart.hideLoading();
+					},
+					error : function() {
+						console.log("服务器错误，年份销售信息获取失败");
+					}
+				});
+			}
+        }
+	</script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org" lang="zh_CN">
+<head th:replace="common/common_head::common_head('库存变化统计')"></head>
+<body>
+  <section id="container">
+  
+    <!-- **********************************************************************************************************************************************************
+      TOP BAR CONTENT & NOTIFICATIONS
+    *********************************************************************************************************************************************************** -->
+    <!--header start-->
+    <header th:replace="common/layout::header"></header>
+    <!--header end-->
+    
+    
+    <!-- **********************************************************************************************************************************************************
+      MAIN SIDEBAR MENU
+    *********************************************************************************************************************************************************** -->
+    <!--sidebar start-->
+    <aside th:replace="common/layout::sidebar"></aside>
+    <!--sidebar end-->
+    
+    
+    <!-- **********************************************************************************************************************************************************
+      MAIN CONTENT
+    *********************************************************************************************************************************************************** -->
+    <!--main content start-->
+    <section id="main-content">
+      <section class="wrapper">
+        <div class="row mt">
+          <div class="col-md-12">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                请选择统计方式：
+                <select onchange="change_inventoryCount()" 
+                  class="myform-control"
+                  id="date_select">
+                  <option value="1">近一周</option>
+                  <option value="2">近一个月</option>
+                  <option value="3">近一年</option> 
+                </select>
+                
+                <select onchange="change_inventoryCount()" 
+                  class="myform-control"
+                  id="op_select">
+                  <option value="1">入库情况</option>
+                  <option value="2">出库情况</option>
+                </select>
+                
+                <select onchange="change_inventoryCount()" 
+                  class="myform-control"
+                  id="type_select">
+                  <option value="1">统计次数</option>
+                  <option value="2">统计数量</option>
+                </select>
+              </div>
+              
+              <br>  
+              <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+              <div id="main" style="width: 100%;height:400px;"></div>
+        
+            </div>
+            <!-- /content-panel -->
+          </div>
+          <!-- /col-md-12 -->
+        </div>
+        <!-- /row -->
+      </section>
+      <!--/wrapper -->
+    </section>
+    <!-- /MAIN CONTENT -->
+    <!--main content end-->
+    
+    
+    <!-- **********************************************************************************************************************************************************
+      MAIN FOOTER
+    *********************************************************************************************************************************************************** -->
+    <!--footer start-->
+    <footer th:replace="common/layout::footer"></footer>
+    <!--footer end-->
+  </section>
+  
+  <!-- common js -->
+  <div th:include="common/common_js::common_js" th:remove="tag"></div>
+  
+  <!--script for this page-->
+  <!-- echarts js -->
+  <script type="text/javascript" src="/med/echarts/js/echarts.js"></script>
+  
+  <script type="text/javascript">
+	 //基于准备好的dom，初始化echarts实例
+  	 var inventoryChart = echarts.init(document.getElementById('main'));
+	 
+  	 $(function() {
+	 	change_inventoryCount();
+	 });
+  	 
+	 function change_inventoryCount() {
+		 var dateSelect = $('#date_select').val();
+		 var opSelect = $('#op_select').val();
+		 var typeSelect = $('#type_select').val();
+		 inventoryChart.showLoading();	// 显示加载动画
+		 
+		 /**
+		  * limitDay:查询天数
+		  * optype:操作方式
+		  * titleText:表格标题
+		  * legend:图例
+		  * dimension:维度
+		  * dataSource:数据源
+		  */
+		 var limitDay, optype, titleText = "", dataSource = "";
+		 if (dateSelect == 1) {
+			 limitDay = 7;
+			 titleText = "近7天内";
+		 }
+		 
+		 if (opSelect == 1) {
+			 titleText += "入库"
+		 }
+		 
+		 if (typeSelect == 1) {
+			 titleText += "次数"
+		 }
+		 
+		 titleText += "前五的药品统计图"
+		 
+		// 异步加载数据
+  		$.ajax({
+  			url: '/med/inventoryCount/getIhDataSource.do',
+  			type: 'POST',
+  			data: {
+  				limitDay: 7,
+  				optype: true
+  			},
+  			success: function(result) {
+  				inventoryChart.setOption({
+  					title: {
+  						text: titleText,
+  					},
+  					tooltip: {
+  				        trigger: 'axis',
+  				        axisPointer: {
+  				            type: 'shadow'
+  				        }
+  				    },
+  				    legend: {
+  				    	data: ['入库'] 
+  				    },
+  				  	grid: {
+  			        	left: '3%',
+  			        	right: '4%',
+  			        	bottom: '3%',
+  			        	containLabel: true
+  			    	},
+  			    	xAxis: {
+  			    		name: '入库次数',
+  			    		nameLocation : 'end', // 位置
+  			          	type: 'value',
+  			          	boundaryGap: [0, 0.01]	// 坐标轴两端留白策略
+  			      	},
+  			      	yAxis : {
+  			      		name: '药品名称',
+			    		nameLocation : 'end', // 位置
+			    		data: ['黄连上清片', '狗尾草', '大豆', '花生', '枸杞']
+  			      	},
+  			      	series: [{
+  			      		name: '入库',
+  			      		type: 'bar',
+  			      		data: [15, 10, 3, 2, 0]
+  			      	}]
+  				}{
+					notMerge : true,  // 不融合旧数据
+					lazyUpdate: true, // 不立即更新
+				});
+  				
+  				inventoryChart.hideLoading();
+  			},
+     		error: function() {
+     				
+     		}
+  		});
+	 }
+  </script>
+  
+</body>
+</html>
