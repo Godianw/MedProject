@@ -36,15 +36,16 @@
                   <i class="fa fa-angle-right"></i>员工管理<hr>
                 </h4>
                 <h5>
-                  <a href="javascrpt:;" data-toggle="modal" 
+                  <a href="#" data-toggle="modal" 
                     data-target="#filter" class="mylink">
                     <i class="fa fa-filter fa-lg"></i> 筛选
                   </a>
-                  <a href="javascript:;" data-toggle="modal"
-                    data-target="#export" class="mylink">
+                  <a href="#" data-toggle="modal"
+                    data-target="#export" class="mylink"
+                    th:if="${@roleService.userHasPrivilege(session.user.id, '导出员工PDF')}">
                     <i class="fa fa-share-square-o fa-lg"></i> 导出
                   </a>
-                  <a href="javascrpt:;" class="mylink"
+                  <a href="#" class="mylink"
                     onclick="staff_refresh()">
                     <i class="fa fa-refresh fa-lg"></i> 显示全部
                   </a>
@@ -236,7 +237,8 @@
           <div class="form-panel">
             <form class="form-horizontal style-form" id="form_export">
               <!-- 导出为PDF -->
-              <div class="form-group">
+              <div class="form-group"
+                th:if="${@roleService.userHasPrivilege(session.user.id, '导出员工PDF')}">
                 <label class="col-sm-5 control-label mylabel"> 
                   <input type="radio" name="exportOptions" 
                   id="pdf" value="pdf" checked> 
@@ -249,7 +251,8 @@
               </div>
               
               <!-- 导出为EXCEL(*.xls) -->
-              <div class="form-group">
+              <div class="form-group"
+                th:if="${@roleService.userHasPrivilege(session.user.id, '导出员工EXCEL')}">
                 <label class="col-sm-5 control-label mylabel">
                   <input type="radio" name="exportOptions"
                   id="excel1" value="excel1"> 
@@ -262,7 +265,8 @@
               </div>
 
               <!-- 导出为EXCEL(*.xlsx) -->
-              <div class="form-group">
+              <div class="form-group"
+                th:if="${@roleService.userHasPrivilege(session.user.id, '导出员工EXCEL')}">
                 <label class="col-sm-5 control-label mylabel">
                   <input type="radio" name="exportOptions"
                   id="excel2" value="excel2"
@@ -296,8 +300,7 @@
       var table;
       var condition = "";
       $(function(){
-/************** DataTables *****************/
-          
+		  /************** DataTables *****************/
     	  // 初始化表格并获取api实例
     	  table = $('#tbl_staff').DataTable({
     		  // 国际化
@@ -353,10 +356,14 @@
                 	targets : 5,
             	 	render : function(data, type, row) {
             	 		var id = row.id;
-            	 		var html = '<button class="btn btn-primary btn-xs" '
-                            + 'data-toggle="modal" data-target="#edit" '
-                            + 'title="编辑" onclick="staff_find('+id+')"> '
-                            + '<i class="fa fa-pencil"></i></button>';
+            	 		var html = '';
+            	 		
+            	 		if ([[${@roleService.userHasPrivilege(session.user.id, '添加员工、修改员工信息')}]]) {
+            	 			html += '<button class="btn btn-primary btn-xs" '
+                              + 'data-toggle="modal" data-target="#edit" '
+                              + 'title="编辑" onclick="staff_find('+id+')"> '
+                              + '<i class="fa fa-pencil"></i></button>';
+            	 		}
                         return html;
             	 	}
              	}, {
@@ -442,7 +449,10 @@
     			$('#name_edit').val(result.name);
      			$('#phone_edit').val(result.phone);
      			$('#post_edit').val(result.post);
-     			$('#state_edit').val(result.state);
+     			if (result.state == false)
+     				$('#state_edit').val("0");
+     			else 
+     				$('#state_edit').val("1");
      		 },
      		 error : function() {
      			 console.log("服务器异常，员工查找失败！");
@@ -478,6 +488,8 @@
     	  
     	  var newUrl = '/med/staff/data_source.do?pageNum=1';
     	  table.ajax.url(newUrl).load();
+    	  
+    	  document.getElementById("form_filter").reset(); 
       }
    	  
       var curDelId;

@@ -16,16 +16,16 @@ function positionFooter() {
 	var windowHeight = $(window).height();
 	var footerMargin = $('.site-footer').css("margin-top");
 	var height = windowHeight - $(document.body).height() + footerHeight;
-	console.log("================================================");
-	console.log("berfore setting : footerMargin = " + footerMargin);
+//	console.log("================================================");
+//	console.log("berfore setting : footerMargin = " + footerMargin);
 //	alert("footerHeight = " + footerMargin);
-	console.log("documentHeight = " + $(document.body).height());
+//	console.log("documentHeight = " + $(document.body).height());
 	if ($(document.body).height() - footerHeight < windowHeight) {
 		$('.site-footer').css("margin-top", height)
 	} else {
 		$('.site-footer').css("margin-top", "30px")
 	}
-	console.log("after setting : footerMargin = " + $('.site-footer').css("margin-top"));
-	console.log("documentHeight = " + $(document.body).height());
-	console.log("================================================");
+//	console.log("after setting : footerMargin = " + $('.site-footer').css("margin-top"));
+//	console.log("documentHeight = " + $(document.body).height());
+//	console.log("================================================");
 }

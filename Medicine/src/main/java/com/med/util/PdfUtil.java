@@ -18,7 +18,7 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.property.HorizontalAlignment;
 import com.itextpdf.layout.property.TextAlignment;
 import com.itextpdf.layout.property.UnitValue;
-import com.med.web.DataInvalidException;
+import com.med.exception.DataInvalidException;
 
 /**
  * pdf工具类

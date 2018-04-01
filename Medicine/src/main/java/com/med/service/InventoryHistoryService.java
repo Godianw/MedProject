@@ -2,10 +2,18 @@ package com.med.service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+
+
+
+
 
 import javax.transaction.Transactional;
 
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,13 +52,53 @@ public class InventoryHistoryService {
 	 * 获取限制时间内的数据
 	 * @return
 	 */
-	public List<InventoryHistory> findWithinLimitDay(
-			int limitDay, boolean optype) {
+	@SuppressWarnings("rawtypes")
+	public List findWithinLimitDay(
+			int limitDay, boolean optype, boolean type) {
 		String limitDate = LocalDate.now().minusDays(limitDay)
 				.format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-		String condition = new StringBuilder("WHERE time >= '")
+		String selectType = type ? "COUNT(*)" : "SUM(quantity)";
+		String hql = new StringBuilder("SELECT medName, ")
+			.append(selectType)
+			.append(" FROM InventoryHistory WHERE time >= '")
 			.append(limitDate).append("' AND optype = ")
-			.append(optype).toString();
-		return inventoryHistoryDao.findAll(condition);
+			.append(optype).append(" GROUP BY medName ORDER BY ")
+			.append(selectType).toString();
+		return fillEmptyData(
+				inventoryHistoryDao.excuteHqlByPaging(hql, 0, 5));
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private List fillEmptyData(List list) {
+		if (list.size() < 5) {
+			List<String> nameList = new ArrayList<String>();
+			Iterator iterator = list.iterator();
+			while (iterator.hasNext()) {
+				Object[] obj = (Object[]) iterator.next();
+				nameList.add(obj[0].toString());
+			}
+			
+			String hql = new StringBuilder("SELECT m.name")
+				.append(" FROM Medicine m")
+				.append(nameList.size() == 0 ? "" : 
+					" WHERE m.name NOT IN (:names)").toString();
+			
+			int length = 5 - list.size();
+			Query query = inventoryHistoryDao.excuteHqlByParamAndPaging(
+					hql, 0, length);
+			
+			List emptyList = 
+					nameList.size() == 0 ? query.list() :
+					query.setParameterList("names", nameList).list();
+			
+			for (int i = 0; i < length; i ++) {
+				Object[] emptyData = new Object[2];
+				emptyData[0] = emptyList.get(i).toString();
+				emptyData[1] = new Integer(0);
+				list.add(0, emptyData);
+			}
+		}
+		
+		return list;
 	}
 }

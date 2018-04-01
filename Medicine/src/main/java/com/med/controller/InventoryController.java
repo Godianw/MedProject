@@ -73,7 +73,8 @@ public class InventoryController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping("/update_quantity.do") 
 	@ResponseBody
-	public Object updateQuantity(Integer id, Integer quantity, Integer type) {
+	public Object updateQuantity(Integer id, Integer quantity, 
+			Integer type) {
 		
 		if (inventoryService.updateQuantity(id, quantity, type)) {
 			Map resultMap = new HashMap<String, String>();
@@ -99,7 +100,7 @@ public class InventoryController {
 		return null;
 	}
 	
-	@RequestMapping("find_quantity.do")
+	@RequestMapping("/find_quantity.do")
 	@ResponseBody
 	public Object findQuantity(Integer id) {
 		

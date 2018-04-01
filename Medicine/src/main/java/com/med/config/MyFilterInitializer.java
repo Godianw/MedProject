@@ -8,6 +8,10 @@ import org.apache.logging.log4j.web.Log4jServletContextListener;
 import org.apache.logging.log4j.web.Log4jServletFilter;
 import org.springframework.web.WebApplicationInitializer;
 
+import com.med.entity.Privilege;
+import com.med.web.LoginFilter;
+import com.med.web.PrivilegeFilter;
+
 public class MyFilterInitializer implements WebApplicationInitializer {
 
 	@Override
@@ -25,6 +29,17 @@ public class MyFilterInitializer implements WebApplicationInitializer {
 				servletContext.addFilter("Log4jServletFilter", 
 						Log4jServletFilter.class);
 		log4jServletFilter.addMappingForUrlPatterns(null, false, "/*");
+		
+		// 添加登录过滤器
+		FilterRegistration.Dynamic loginFilter = 
+				servletContext.addFilter("LoginFilter", 
+						LoginFilter.class);
+		loginFilter.addMappingForUrlPatterns(null, false, "*.do");
+		
+		// 权限过滤器
+		FilterRegistration.Dynamic privilegeFilter = 
+				servletContext.addFilter("PrivilegeFilter", 
+						PrivilegeFilter.class);
+		privilegeFilter.addMappingForUrlPatterns(null, false, "*.do");
 	}
-
 }

@@ -114,7 +114,7 @@ public class SalesController {
 	
 		// 填充数据
 		String[] columnName = new String[] {
-				"编号", "操作员工", "药品名", "数量", "日期", "总金额"};
+				"编号", "操作人员", "药品名", "数量", "日期", "总金额"};
 		List<List> dataList = new ArrayList<List>();
 		List<Sales> salesList = salesService.findSales(
 				"ORDER BY id DESC");
@@ -122,7 +122,7 @@ public class SalesController {
 		for (Sales sales : salesList) {
 			List<Object> singleData = new ArrayList<Object>();
 			singleData.add(sales.getId());
-			singleData.add(sales.getStaff());
+			singleData.add(sales.getUserName());
 			singleData.add(sales.getMedicine());
 			singleData.add(sales.getCount());
 			singleData.add(sales.getDatetime());
@@ -162,7 +162,7 @@ public class SalesController {
 
 		// 填充数据
 		String[] columnName = new String[] {
-				"编号", "操作员工", "药品名", "数量", "日期", "总金额"};
+				"编号", "操作人员", "药品名", "数量", "日期", "总金额"};
 		List<List> dataList = new ArrayList<List>();
 		List<Sales> salesList = salesService.findSales(
 				"ORDER BY id DESC");
@@ -170,7 +170,7 @@ public class SalesController {
 		for (Sales sales : salesList) {
 			List<Object> singleData = new ArrayList<Object>();
 			singleData.add(sales.getId());
-			singleData.add(sales.getStaff());
+			singleData.add(sales.getUserName());
 			singleData.add(sales.getMedicine());
 			singleData.add(sales.getCount());
 			singleData.add(sales.getDatetime());

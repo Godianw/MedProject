@@ -71,7 +71,7 @@ public class MedicineController {
 	}
 
 	/**
-	 * 保存供应商信息
+	 * 保存药品信息
 	 * @param medicine
 	 * @return
 	 */
@@ -87,7 +87,7 @@ public class MedicineController {
 		return resultMap;
 	}
 
-	// 查找供应商
+	// 查找药品
 	@RequestMapping("/find.do")
 	@ResponseBody
 	public Object find(Integer id) {
@@ -95,7 +95,7 @@ public class MedicineController {
 		return medicineService.findOne(id);
 	}
 
-	// 删除供应商
+	// 删除药品
 	@RequestMapping("/delete.do")
 	@ResponseBody
 	public Object delete(Integer id) {
@@ -202,6 +202,8 @@ public class MedicineController {
 			out.close();
 		}
 	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping("/find_name.do")
 	@ResponseBody
 	public Object findAllName() {

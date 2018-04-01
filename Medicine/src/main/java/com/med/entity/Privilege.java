@@ -38,6 +38,14 @@ public class Privilege {
 	@Basic(fetch = FetchType.LAZY)
 	private String content;
 	
+	@Column(name = "priv_request_url")
+	@Basic(fetch = FetchType.LAZY)
+	private String requestUrl;
+	
+	@Column(name = "priv_pid")
+	@Basic(fetch = FetchType.LAZY)
+	private Integer pid;
+	
 	/**
 	 * CascadeType.SAVE_UPDATE表示使用hibernate注解级联保存和更新
 	 * JoinColumns定义本方在中间表的主键映射
@@ -59,6 +67,14 @@ public class Privilege {
 		return content;
 	}
 
+	public String getRequestUrl() {
+		return requestUrl;
+	}
+
+	public Integer getPid() {
+		return pid;
+	}
+
 	public Set<Role> getRoles() {
 		return roles;
 	}
@@ -71,8 +87,17 @@ public class Privilege {
 		this.content = content;
 	}
 
+	public void setRequestUrl(String requestUrl) {
+		this.requestUrl = requestUrl;
+	}
+
+	public void setPid(Integer pid) {
+		this.pid = pid;
+	}
+
 	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
 	}
 
+	
 }

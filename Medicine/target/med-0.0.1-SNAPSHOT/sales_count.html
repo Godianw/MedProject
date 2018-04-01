@@ -26,7 +26,7 @@
     *********************************************************************************************************************************************************** -->
     <!--main content start-->
     <section id="main-content">
-      <section class="wrapper">
+      <section class="wrapper site-min-height">
         <div class="row mt">
           <div class="col-md-12">
             <div class="panel panel-default">
@@ -35,8 +35,12 @@
                 <select onchange="change_salesCount()" 
                   class="myform-control"
                   id="salesCount_select">
-                  <option value="1">统计各月销售额</option>
-                  <option value="2">统计各年销售额</option>
+                  <option 
+                  th:if="${@roleService.userHasPrivilege(session.user.id, '统计各月销售额')}"
+                  value="1">统计各月销售额</option>
+                  <option
+                  th:if="${@roleService.userHasPrivilege(session.user.id, '统计各年销售额')}"
+                  value="2">统计各年销售额</option>
                 </select>
               </div>
               

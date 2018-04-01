@@ -19,35 +19,6 @@ import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatche
 public class MedWebAppInitializer 
 	extends AbstractAnnotationConfigDispatcherServletInitializer {
 	
-/*	@Override
-	public void onStartup(ServletContext servletContext) 
-			throws ServletException {
-		// TODO 自动生成的方法存根
-		/** 
-         * 添加编码过滤 
-         */ 
-	/*	FilterRegistration.Dynamic characterEncodingFilter = 
-    			servletContext.addFilter("encodingFilter",  
-                new CharacterEncodingFilter());  
-        characterEncodingFilter.setInitParameter("encoding", "UTF-8");  
-        characterEncodingFilter.setInitParameter("forceEncoding", "true");  
-        characterEncodingFilter.addMappingForUrlPatterns(null, false, "/*");  
-		
-		/**
-         * log4j2
-         */
-        // 添加log4j监听器
-    /*    servletContext.setInitParameter("log4jConfigLocation", 
-        		"classpath:log4j2.properties");
-        servletContext.addListener(Log4jServletContextListener.class);
-        
-        // 添加log4j过滤器
-        FilterRegistration.Dynamic log4jFilter = 
-        		servletContext.addFilter("log4jServletFilter", 
-        				new Log4jServletFilter());
-        log4jFilter.addMappingForUrlPatterns(null, false, "/*");
-	}*/
-	
 	@Override
 	protected Class<?>[] getRootConfigClasses() {
 		// 使用RootConfig.class配置类来配置ContextLoaderListener创建的应用上下文的bean

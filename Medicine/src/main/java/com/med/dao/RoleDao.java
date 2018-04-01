@@ -43,9 +43,9 @@ public class RoleDao extends BaseDao {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Privilege> findAllPrivileges() {
-		return currentSession().createQuery("FROM Privilege ")
-				.list();
+	public List<Privilege> findAllPrivileges(String condition) {
+		return currentSession().createQuery("FROM Privilege "
+				+ (condition == null ? "" : condition)).list();
 	}
 	
 	/**
@@ -112,8 +112,8 @@ public class RoleDao extends BaseDao {
 	 * @param priv_id
 	 * @return
 	 */
-	public Set<Privilege> findRolePrivileges(int priv_id) {
-		return findOne(priv_id).getPrivileges();
+	public Set<Privilege> findRolePrivileges(int role_id) {
+		return findOne(role_id).getPrivileges();
 	}
 	
 	/**

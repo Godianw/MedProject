@@ -24,11 +24,15 @@ public class RoleService {
 	@Autowired
 	RoleDao roleDao;
 	
+	@Autowired
+	UserService userService;
+	
 	private Map<String, Object> getRoleMap(Role role) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("id", role.getId());
 		map.put("name", role.getName());
-		map.put("desc", role.getDesc());
+		if (role.getDesc() != null)
+			map.put("desc", role.getDesc());
 		
 		return map;
 	}
@@ -97,25 +101,21 @@ public class RoleService {
 	 * @param id
 	 * @return
 	 */
-	public Map<String, Object> findPrivileges(Integer id) {
-		List<Privilege> privileges = roleDao.findAllPrivileges();
-		if (id == null || privileges == null)
+	public List<Map<String, Object>> findRolePrivileges(Integer id) {
+		Set<Privilege> privileges = roleDao.findRolePrivileges(id);
+		if (id == null || privileges.isEmpty())
 			return null;
 		
-		Map<String, Object> resultMap = new HashMap<String, Object>();
 		List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
 		for (Privilege privilege : privileges) {
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("id", privilege.getId());
 			map.put("content", privilege.getContent());
-			map.put("include", 
-					roleDao.hasPrivilege(id, privilege.getId()));
+			map.put("url", privilege.getRequestUrl());
 			list.add(map);
 		}
 		
-		resultMap.put("roleId", id);
-		resultMap.put("privilege", list);
-		return resultMap;
+		return list;
 	}
 	
 	/**
@@ -161,11 +161,11 @@ public class RoleService {
 		// 封装权限集合
 		Set<Privilege> privileges = new HashSet<Privilege>();
 		for (int i = 0; i < privIds.length; ++ i) {
-			privileges.add(
-					findPrivilege(Integer.valueOf(privIds[i])));
+			privileges.add(findPrivilege(
+				Integer.valueOf(privIds[i])));
 		}
 		
-		roleDao.updatePriv(id, privileges);;
+		roleDao.updatePriv(id, privileges);
 		return true;
 	}
 	
@@ -185,5 +185,58 @@ public class RoleService {
 		}
 		
 		return rolesList;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public List getPrivTreeData() {
+		
+		return getSubPriv(0);
+	}
+	
+	/**
+	 * 查询子菜单并封装为List<Map>
+	 * @param id
+	 * @return
+	 */
+	private List<Map> getSubPriv(int id) {
+		List<Map> privList = new ArrayList<Map>();
+		List<Privilege> menuList = 
+				roleDao.findAllPrivileges("WHERE pid = " + id);
+		if (menuList == null) 
+			return null;
+		for (Privilege privilege : menuList) {
+			Map<String, Object> menuMap = 
+					new HashMap<String, Object>();
+			menuMap.put("title", privilege.getContent());
+			menuMap.put("key", privilege.getId());
+			List subPrivList = getSubPriv(privilege.getId());
+			if (subPrivList != null) {
+				menuMap.put("expand", true);
+				menuMap.put("children", subPrivList);
+			}
+			privList.add(menuMap);
+		}
+		
+		return privList;
+	}
+	
+	// 查找角色是否拥有该权限
+	public boolean userHasPrivilege(int user_id, String priv_content) {
+		Map<String, Object> userMap = userService.findUser(user_id);
+		Set<Role> roleSet = userService.getRolesSet(
+				userMap.get("roles").toString());
+		for (Role role : roleSet) {
+			Set<Privilege> privileges = 
+					roleDao.findRolePrivileges(role.getId());
+			for (Privilege privilege : privileges) {
+				if (privilege.getContent().equals(priv_content))
+					return true;
+			}
+		}
+		
+		return false;
 	}
 }

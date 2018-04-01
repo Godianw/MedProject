@@ -27,7 +27,7 @@
     <!--main content start-->
     
     <section id="main-content">
-      <section class="wrapper">
+      <section class="wrapper site-min-height">
         <div class="row mt">
           <div class="col-md-12">
             <div class="content-panel">
@@ -37,19 +37,21 @@
                   <i class="fa fa-angle-right"></i>库存信息管理<hr>
                 </h4>
                 <h5>
-                  <a href="javascrpt:;" data-toggle="modal" 
+                  <a href="#" data-toggle="modal" 
                     data-target="#filter" class="mylink">
                     <i class="fa fa-search-plus fa-lg"></i> 库存查询
                   </a>
-                  <a href="javascrpt:;" data-toggle="modal" 
-                    data-target="#inbound" class="mylink">
+                  <a href="#" data-toggle="modal" 
+                    data-target="#inbound" class="mylink"
+                    th:if="${@roleService.userHasPrivilege(session.user.id, '入库、出库')}">
                     <i class="fa fa-check fa-lg"></i> 进货入库
                   </a>
-                  <a href="javascrpt:;" data-toggle="modal" 
-                    data-target="#outbound" class="mylink">
+                  <a href="#" data-toggle="modal" 
+                    data-target="#outbound" class="mylink"
+                    th:if="${@roleService.userHasPrivilege(session.user.id, '入库、出库')}">
                     <i class="fa fa-times fa-lg"></i> 退货出库
                   </a>
-                  <a href="javascrpt:;" class="mylink"
+                  <a href="#" class="mylink"
                     onclick="inventory_refresh()">
                     <i class="fa fa-refresh fa-lg"></i> 显示全部
                   </a>
@@ -110,7 +112,8 @@
             <form class="form-horizontal style-form" id="form_inbound">
               <!-- 药品名称 -->
               <div class="form-group" style="padding-bottom:0px;">
-                <label class="col-sm-2 col-sm-2 control-label">选择药品</label>
+                <label class="col-sm-2 col-sm-2 control-label">
+                <b style="color:red;">* </b>选择药品</label>
                 <div class="col-sm-10">
                   <select class="myform-control" name="name"
                     id="name_inbound">
@@ -133,7 +136,8 @@
               <!-- 入库数量 -->
               <div class="form-group" style="padding-bottom:0px;">
                 <label class="col-sm-2 col-sm-2 control-label"
-                   style="font-size:12px;">入库数量</label>
+                   style="font-size:12px;">
+                   <b style="color:red;">* </b>入库数量</label>
                 <div class="col-sm-10">
                   <input type="number" class="myform-control"
                     value="100" min="0" step="100" name="quantity"
@@ -169,7 +173,8 @@
             <form class="form-horizontal style-form" id="form_outbound">
               <!-- 药品名称 -->
               <div class="form-group" style="padding-bottom:0px;">
-                <label class="col-sm-2 col-sm-2 control-label">选择药品</label>
+                <label class="col-sm-2 col-sm-2 control-label">
+                <b style="color:red;">* </b>选择药品</label>
                 <div class="col-sm-10">
                   <select class="myform-control" name="name"
                     id="name_outbound">
@@ -192,7 +197,8 @@
               <!-- 出库数量 -->
               <div class="form-group" style="padding-bottom:0px;">
                 <label class="col-sm-2 col-sm-2 control-label"
-                   style="font-size:12px;">出库数量</label>
+                   style="font-size:12px;">
+                   <b style="color:red;">* </b>出库数量</label>
                 <div class="col-sm-10">
                   <input type="number" class="myform-control"
                     value="100" min="0" step="100" name="quantity"
@@ -398,10 +404,14 @@
              		targets : 4,
             	 	render : function(data, type, row) {
             	 		var id = row.id;
-            	 		var html = '<button class="btn btn-primary btn-xs" '
-                            + 'data-toggle="modal" data-target="#edit" '
-                            + 'title="编辑" onclick="inventory_find('+id+')"> '
-                            + '<i class="fa fa-pencil"></i></button>';
+            	 		var html = '';
+            	 		
+            	 		if ([[${@roleService.userHasPrivilege(session.user.id, '更新库存信息')}]]) {
+            	 			html += '<button class="btn btn-primary btn-xs" ' 
+            	 				+ 'data-toggle="modal" data-target="#edit" '
+                            	+ 'title="更新库存信息" onclick="inventory_find('+id+')"> '
+                            	+ '<i class="fa fa-pencil"></i></button>';
+            	 		}
                         return html;
             	 	}
             	}, {
@@ -621,8 +631,9 @@
     	  var outquantity = $('#quantity_outbound').val();
     	  var curquantity = $('#curquantity_outbound').text();
     	  
-    	  if (outquantity > curquantity) {
-    		  alert("出库数量不得超过当前库存量");
+    	  if (parseInt(outquantity) > parseInt(curquantity)) {
+    		  layer.msg("出库数量不得超过当前库存量");
+    		  return ;
     	  }
     	  
     	  $.ajax({
@@ -649,6 +660,8 @@
     	  
     	  var newUrl = '/med/inventory/data_source.do?pageNum=1';
     	  table.ajax.url(newUrl).load();
+    	  
+    	  document.getElementById("form_filter").reset(); 
       }
 
       function pageChange(pageNum) {

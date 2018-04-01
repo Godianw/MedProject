@@ -27,7 +27,7 @@
     <!--main content start-->
     
     <section id="main-content">
-      <section class="wrapper">
+      <section class="wrapper site-min-height">
         <div class="row mt">
           <div class="col-md-12">
             <div class="content-panel">
@@ -37,20 +37,20 @@
                   <i class="fa fa-angle-right"></i>库存操作记录<hr>
                 </h4>
                 <h5>
-                  <a href="javascrpt:;" data-toggle="modal" 
+                  <a href="#" data-toggle="modal" 
                     data-target="#filter" class="mylink">
                     <i class="fa fa-filter fa-lg"></i> 筛选
                   </a>
-                  <a href="javascript:;" data-toggle="modal"
+                  <a href="#" data-toggle="modal"
                     data-target="#export" class="mylink">
                     <i class="fa fa-share-square-o fa-lg"></i> 导出
                   </a>
-                  <a href="javascrpt:;" class="mylink"
+                  <a href="#" class="mylink"
                     onclick="ih_refresh()">
                     <i class="fa fa-refresh fa-lg"></i> 显示全部
                   </a>
                   <!--
-                  <a href="javascript:;" data-toggle="modal"
+                  <a href="#" data-toggle="modal"
                     data-target="#clean" class="mylink">
                     <i class="fa fa-trash fa-lg"></i> 清空
                   </a>
@@ -172,7 +172,8 @@
           <div class="form-panel">
             <form class="form-horizontal style-form" id="form_export">
               <!-- 导出为PDF -->
-              <div class="form-group">
+              <div class="form-group"
+                th:if="${@roleService.userHasPrivilege(session.user.id, '导出库存操作记录PDF')}">
                 <label class="col-sm-5 control-label mylabel"> 
                   <input type="radio" name="exportOptions" 
                   id="pdf" value="pdf" checked> 
@@ -185,7 +186,8 @@
               </div>
               
               <!-- 导出为EXCEL(*.xls) -->
-              <div class="form-group">
+              <div class="form-group"
+                th:if="${@roleService.userHasPrivilege(session.user.id, '导出库存操作记录EXCEL')}">
                 <label class="col-sm-5 control-label mylabel">
                   <input type="radio" name="exportOptions"
                   id="excel1" value="excel1"> 
@@ -198,7 +200,8 @@
               </div>
 
               <!-- 导出为EXCEL(*.xlsx) -->
-              <div class="form-group">
+              <div class="form-group"
+                th:if="${@roleService.userHasPrivilege(session.user.id, '导出库存操作记录EXCEL')}">
                 <label class="col-sm-5 control-label mylabel">
                   <input type="radio" name="exportOptions"
                   id="excel2" value="excel2"
@@ -417,6 +420,8 @@
     	  
     	  var newUrl = '/med/inventory_history/data_source.do?pageNum=1';
     	  table.ajax.url(newUrl).load();
+    	  
+    	  document.getElementById("form_filter").reset(); 
       }
    	  
       function pageChange(pageNum) {

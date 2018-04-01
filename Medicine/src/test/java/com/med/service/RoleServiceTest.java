@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import redis.clients.jedis.Jedis;
+
 import com.med.config.RootConfig;
 import com.med.dao.RoleDao;
 import com.med.entity.Privilege;
@@ -80,5 +82,7 @@ public class RoleServiceTest {
 			System.out.println(map.get("content"));
 			System.out.println(map.get("include"));
 		}*/
+		Jedis jedis = new Jedis();
+		System.out.println(jedis.ping());
 	}
 }

@@ -3,6 +3,9 @@ package com.med.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.med.entity.DTRequestParam;
 
 /**
@@ -48,5 +51,23 @@ public class DataEncapUtil {
 	public static int getPageTotal(int recordsTotal, int pageSize) {
 		return (recordsTotal / pageSize) + 
 				((recordsTotal % pageSize) == 0 ? 0 : 1);
+	}
+	
+	// 判断是否是ajax请求
+	public static boolean isAjaxRequest(
+			HttpServletRequest request,
+			HttpServletResponse response, 
+			String redirectUrl) {
+		boolean isAjax = false;
+		String type = request.getHeader("X-Requested-With") == null ? ""
+				: request.getHeader("X-Requested-With");
+
+		if (type != null && type.equals("XMLHttpRequest")) {
+			// 处理ajax请求
+			response.setHeader("REDIRECT", "REDIRECT");// 告诉ajax这是重定向
+			response.setHeader("CONTEXTPATH", redirectUrl);// 重定向地址
+			isAjax = true;
+		}
+		return isAjax;
 	}
 }

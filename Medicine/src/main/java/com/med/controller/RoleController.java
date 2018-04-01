@@ -3,12 +3,8 @@ package com.med.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import javax.persistence.criteria.CriteriaBuilder.In;
 import javax.servlet.http.HttpServletRequest;
-
-import net.sf.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.med.entity.DTRequestParam;
-import com.med.entity.Privilege;
 import com.med.entity.Role;
 import com.med.service.RoleService;
 import com.med.util.DataEncapUtil;
@@ -90,13 +85,13 @@ public class RoleController {
 	 * @param privList
 	 * @return
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	@RequestMapping("/save_priv.do")
 	@ResponseBody
-	public Object savePriv(Integer id, String[] privIds) {
+	public Object savePriv(Integer id, String privIdSets) {
 		Map resultMap = null;
 		
-		if (roleService.saveRolePriv(id, privIds)) {
+		if (roleService.saveRolePriv(id, privIdSets.split(","))) {
 			resultMap = new HashMap<String, String>();
 			resultMap.put("resultCode", "200");
 		}
@@ -125,8 +120,7 @@ public class RoleController {
 	@ResponseBody
 	public Object findPriv(Integer id) {
 		
-		System.out.println(roleService.findPrivileges(id).size());
-		return roleService.findPrivileges(id);
+		return roleService.findRolePrivileges(id);
 	}
 	
 	/**
@@ -161,5 +155,11 @@ public class RoleController {
 		resultMap.put("resultCode", "200");
 		resultMap.put("data", roleService.findRoleNameList());
 		return resultMap;
+	}
+	
+	@RequestMapping("/get_privtree_data.do")
+	@ResponseBody
+	public Object getPrivTreeData() {
+		return roleService.getPrivTreeData();
 	}
 }

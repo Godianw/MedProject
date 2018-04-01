@@ -4,11 +4,14 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.hibernate.Hibernate;
 import org.hibernate.SessionFactory;
+import org.hibernate.c3p0.internal.C3P0ConnectionProvider;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
+import org.springframework.jdbc.support.nativejdbc.Jdbc4NativeJdbcExtractor;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -34,12 +37,22 @@ public class HibernateConfig {
 		sfb.setPackagesToScan(new String[] { "com.med.entity" } );	
 		/* 设置属性 */
 		Properties props = new Properties();
-		props.setProperty("dialect", "org.hibernate.dialect.MySQLDialect");
+		props.setProperty("dialect", 
+				"org.hibernate.dialect.MySQLDialect");
 		props.setProperty("show_sql", "true");
 		props.setProperty("format_sql", "true");
 	/*	props.setProperty("current_session_context_class",
 				 "org.springframework.orm.hibernate5.SpringSessionContext");
 		props.setProperty("enable_lazy_load_no_trans", "true");*/
+	/*	props.setProperty("hibernate.connection.provider_class", 
+				"org.hibernate.c3p0.internal.C3P0ConnectionProvider");
+		props.setProperty("hibernate.connection.username", "root");
+		props.setProperty("hibernate.connection.password", "123456");
+		props.setProperty("hibernate.connection.driver_class", 
+				"com.mysql.jdbc.Driver");
+		props.setProperty("hibernate.connection.url", 
+				"jdbc:mysql://localhost:3306/medicine?useUnicode=true&characterEncoding=utf8");
+		*/
 		sfb.setHibernateProperties(props);
 		
 		return sfb;

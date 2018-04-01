@@ -26,7 +26,7 @@
     *********************************************************************************************************************************************************** -->
     <!--main content start--> 
     <section id="main-content">
-      <section class="wrapper">
+      <section class="wrapper site-min-height">
         <div class="row mt">
           <div class="col-md-12">
             <div class="content-panel">
@@ -36,19 +36,21 @@
                   <i class="fa fa-angle-right"></i>供应商管理<hr>
                 </h4>
                 <h5>
-                  <a href="javascrpt:;" data-toggle="modal" 
-                    data-target="#add" class="mylink">
+                  <a href="#" data-toggle="modal" 
+                    data-target="#add" class="mylink"
+                    th:if="${@roleService.userHasPrivilege(session.user.id, '添加、修改供应商')}">
                     <i class="fa fa-plus fa-lg"></i> 添加供应商
                   </a>
-                  <a href="javascrpt:;" data-toggle="modal" 
+                  <a href="#" data-toggle="modal" 
                     data-target="#filter" class="mylink">
                     <i class="fa fa-filter fa-lg"></i> 筛选
                   </a>
-                  <a href="javascript:;" data-toggle="modal"
-                    data-target="#export" class="mylink">
+                  <a href="#" data-toggle="modal"
+                    data-target="#export" class="mylink"
+                    th:if="${@roleService.userHasPrivilege(session.user.id, '导出供应商PDF')}">
                     <i class="fa fa-share-square-o fa-lg"></i> 导出
                   </a>
-                  <a href="javascrpt:;" class="mylink"
+                  <a href="#" class="mylink"
                     onclick="supplier_refresh()">
                     <i class="fa fa-refresh fa-lg"></i> 显示全部
                   </a>
@@ -120,7 +122,8 @@
               <!-- 供应商名称 -->
               <div class="form-group" style="padding-bottom:0px;">
                 <label class="col-sm-2 col-sm-2 control-label"
-                   style="font-size:12px;">供应商名称</label>
+                   style="font-size:12px;">
+                   <b style="color:red;">* </b>供应商名称</label>
                 <div class="col-sm-10">
                   <input type="text" class="form-control" name="name"
                     id="name_edit" placeholder="供应商名称" 
@@ -130,7 +133,8 @@
               
               <!-- 联系人 -->
               <div class="form-group" style="padding-bottom:0px;">
-                <label class="col-sm-2 col-sm-2 control-label">联系人</label>
+                <label class="col-sm-2 col-sm-2 control-label">
+                <b style="color:red;">* </b>联系人</label>
                 <div class="col-sm-10">
                   <input type="text" class="form-control" 
                     id="contacts_edit"  name="contacts"
@@ -140,7 +144,8 @@
               
               <!-- 联系电话 -->
               <div class="form-group" style="padding-bottom:0px;">
-                <label class="col-sm-2 col-sm-2 control-label">联系电话</label>
+                <label class="col-sm-2 col-sm-2 control-label">
+                <b style="color:red;">* </b>联系电话</label>
                 <div class="col-sm-10">
                   <input type="text" class="form-control NumDashText" 
                     id="contactPhone_edit"  name="contactPhone"
@@ -150,7 +155,8 @@
               
               <!-- 所在城市-->
               <div class="form-group" style="padding-bottom:0px;">
-                <label class="col-sm-2 col-sm-2 control-label">所在城市</label>
+                <label class="col-sm-2 col-sm-2 control-label">
+                <b style="color:red;">* </b>所在城市</label>
                 <div class="city-select col-sm-10" id="single-select-3"></div>
                 <input type="hidden" id="city_edit" name="city" />
               </div>
@@ -184,7 +190,8 @@
               <!-- 供应商名称 -->
               <div class="form-group" style="padding-bottom:0px;">
                 <label class="col-sm-2 col-sm-2 control-label"
-                   style="font-size:12px;">供应商名称</label>
+                   style="font-size:12px;">
+                   <b style="color:red;">* </b>供应商</label>
                 <div class="col-sm-10">
                   <input type="text" class="form-control" id="name_add"
                     placeholder="供应商名称" name="name" />
@@ -193,7 +200,8 @@
               
               <!-- 联系人 -->
               <div class="form-group" style="padding-bottom:0px;">
-                <label class="col-sm-2 col-sm-2 control-label">联系人</label>
+                <label class="col-sm-2 col-sm-2 control-label">
+                <b style="color:red;">* </b>联系人</label>
                 <div class="col-sm-10">
                   <input type="text" class="form-control" id="contacts_add"
                     placeholder="联系人" name="contacts" />
@@ -202,7 +210,8 @@
               
               <!-- 联系电话 -->
               <div class="form-group" style="padding-bottom:0px;">
-                <label class="col-sm-2 col-sm-2 control-label">联系电话</label>
+                <label class="col-sm-2 col-sm-2 control-label">
+                <b style="color:red;">* </b>联系电话</label>
                 <div class="col-sm-10">
                   <input type="text" class="form-control NumDashText" 
                   id="contactPhone_add" placeholder="联系电话" 
@@ -212,7 +221,8 @@
               
               <!-- 所在城市 -->
               <div class="form-group" style="padding-bottom:0px;">
-                <label class="col-sm-2 col-sm-2 control-label">所在城市</label>
+                <label class="col-sm-2 col-sm-2 control-label">
+                <b style="color:red;">* </b>所在城市</label>
                 <div class="city-select col-sm-10" id="single-select-1"></div>
                 <input type="hidden" id="city_add" name="city" />
               </div>          
@@ -317,7 +327,8 @@
           <div class="form-panel">
             <form class="form-horizontal style-form" id="form_export">
               <!-- 导出为PDF -->
-              <div class="form-group">
+              <div class="form-group"
+                th:if="${@roleService.userHasPrivilege(session.user.id, '导出供应商PDF')}">
                 <label class="col-sm-5 control-label mylabel"> 
                   <input type="radio" name="exportOptions" 
                   id="pdf" value="pdf" checked> 
@@ -330,7 +341,8 @@
               </div>
               
               <!-- 导出为EXCEL(*.xls) -->
-              <div class="form-group">
+              <div class="form-group"
+                th:if="${@roleService.userHasPrivilege(session.user.id, '导出供应商EXCEL')}">
                 <label class="col-sm-5 control-label mylabel">
                   <input type="radio" name="exportOptions"
                   id="excel1" value="excel1"> 
@@ -343,7 +355,8 @@
               </div>
 
               <!-- 导出为EXCEL(*.xlsx) -->
-              <div class="form-group">
+              <div class="form-group"
+                th:if="${@roleService.userHasPrivilege(session.user.id, '导出供应商EXCEL')}">
                 <label class="col-sm-5 control-label mylabel">
                   <input type="radio" name="exportOptions"
                   id="excel2" value="excel2"
@@ -486,14 +499,21 @@
                 	targets : 5,
             	 	render : function(data, type, row) {
             	 		var id = row.id;
-            	 		var html = '<button class="btn btn-primary btn-xs" '
-                            + 'data-toggle="modal" data-target="#edit" '
-                            + 'title="编辑" onclick="supplier_find('+id+')"> '
-                            + '<i class="fa fa-pencil"></i></button> '
-                            + '<button class="btn btn-danger btn-xs" '
-                            + 'data-toggle="modal" data-target="#delete"  '
-                            + 'title="删除" onclick="change_delId('+id+')"> '
-                            + '<i class="fa fa-trash-o "></i></button>';
+            	 		var html = '';
+            	 		
+            	 		if ([[${@roleService.userHasPrivilege(session.user.id, '添加、修改供应商')}]]) {
+            	 			html += '<button class="btn btn-primary btn-xs" '
+                                + 'data-toggle="modal" data-target="#edit" '
+                                + 'title="编辑" onclick="supplier_find('+id+')"> '
+                                + '<i class="fa fa-pencil"></i></button> ';
+            	 		}
+            	 		
+            	 		if ([[${@roleService.userHasPrivilege(session.user.id, '删除供应商')}]]) {
+            	 			html += '<button class="btn btn-danger btn-xs" '
+                                + 'data-toggle="modal" data-target="#delete"  '
+                                + 'title="删除" onclick="change_delId('+id+')"> '
+                                + '<i class="fa fa-trash-o "></i></button>';
+            	 		}
                         return html;
             	 	}
              	}, {
@@ -651,6 +671,8 @@
     	  
     	  var newUrl = '/med/supplier/data_source.do?pageNum=1';
     	  table.ajax.url(newUrl).load();
+    	  
+    	  document.getElementById("form_filter").reset(); 
       }
       
       var curDelId;

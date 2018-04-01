@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.med.dao.SalesDao;
+import com.med.entity.Medicine;
 import com.med.entity.Sales;
 
 @Service
@@ -21,13 +22,19 @@ public class SalesService {
 	@Autowired
 	SalesDao salesDao;
 	
+	@Autowired
+	InventoryService inventoryService;
+	
+	@Autowired
+	MedicineService medicineService;
+	
 	/**
 	 * 查找所有符合条件的销售记录
 	 * @param condition 条件
 	 * @return 销售记录集合
 	 */
 	public List<Sales> findSales(String condition) {
-		System.out.println(condition);
+	//	System.out.println(condition);
 		return salesDao.finaAll(condition);
 	}
 	
@@ -40,7 +47,7 @@ public class SalesService {
 	 */
 	public List<Sales> findSalesByPaging(String condition,
 			int startIndex, int recordNum) {
-		System.out.println(condition);
+	//	System.out.println(condition);
 		return salesDao.findByPaging(condition, startIndex, recordNum);
 	}
 	
@@ -63,7 +70,21 @@ public class SalesService {
 	public void save(Sales sales) {
 		
 		if (sales.getId() == null) {
+			if (sales.getMedicine() != null) {
+				int medId = sales.getMedicine().getId();
+				Medicine medicine = medicineService.findOne(medId);
+				Float singlePrice = medicine.getSinglePrice();
+				sales.setMoney(singlePrice * sales.getCount());
+			}
+			
+			// 更新库存
+			if (sales.getMedicine() != null) {
+				inventoryService.updateQuantity(
+					sales.getMedicine().getId(),
+					sales.getCount(), 1);
+			}
 			salesDao.insert(sales);
+			
 		} else {
 			salesDao.update(sales);
 		}
@@ -160,6 +181,7 @@ public class SalesService {
 	 * 获取年销售状态数据
 	 * @return
 	 */
+	@SuppressWarnings("rawtypes")
 	public List getYearDataSource() {
 		
 		// 数据项

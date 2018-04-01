@@ -14,7 +14,7 @@ import com.med.service.SalesService;
 
 @Controller
 @RequestMapping("salesCount")
-public class salesCountController {
+public class SalesCountController {
 
 	@Autowired
 	SalesService salesService;

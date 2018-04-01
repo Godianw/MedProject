@@ -1,5 +1,8 @@
 package com.med.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +25,13 @@ public class InventoryCountController {
 	@RequestMapping("/getIhDataSource.do")
 	@ResponseBody
 	public Object getIhDataSource(int limitDay, 
-			boolean optype) {
+			boolean optype, boolean type) {
 		
-		return inventoryHistoryService.findWithinLimitDay(
-				limitDay, optype);
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		map.put("dataSource", 
+				inventoryHistoryService.findWithinLimitDay(
+				limitDay, optype, type));
+		return map;
 	}
 }

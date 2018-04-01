@@ -1,5 +1,8 @@
 package com.med.service;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +21,15 @@ public class InventoryHistoryServiceTest {
 	
 	@Test
 	public void findWithinWeek() {
-		for (InventoryHistory inventoryHistory :
-				inventoryHistoryService.findWithinLimitDay(365, 0)) {
-			System.out.println(inventoryHistory.getMedName());
+		List list = inventoryHistoryService.findWithinLimitDay(
+				7, false, false);
+		System.out.println(list.size());
+		Iterator iterator = list.iterator();
+		while (iterator.hasNext()) {
+			Object[] obj = (Object[]) iterator.next();
+			System.out.println("name = " + obj[0].toString());
+			System.out.println("quantity = " 
+					+ Integer.valueOf(obj[1].toString()));
 		}
 	}
 }

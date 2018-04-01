@@ -53,7 +53,7 @@ public class SalesDao extends BaseDao {
 		// 取出session中的对象进行更新
 		Sales tmp = findOne(sales.getId());
 		
-		tmp.setStaff(sales.getStaff());
+		tmp.setUserName(sales.getUserName());
 		tmp.setMedicine(sales.getMedicine());
 		tmp.setCount(sales.getCount());
 		tmp.setDatetime(sales.getDatetime());

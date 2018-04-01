@@ -20,7 +20,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import com.med.web.DataInvalidException;
+import com.med.exception.DataInvalidException;
 
 /**
  * Excel工具类

@@ -28,12 +28,13 @@ public class Sales {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	@ManyToOne(cascade = {CascadeType.REFRESH}, optional = false)
-	@JoinColumn(name = "sales_staff_id")
-	private Staff staff;
+	@Column(name = "sales_user_name")
+	@Basic(fetch = FetchType.LAZY)
+	private String userName;
 	
-	@ManyToOne(cascade = {CascadeType.REFRESH}, optional = false)
+	@ManyToOne(cascade = {CascadeType.REFRESH})
 	@JoinColumn(name = "sales_med_id")
+	@Basic(fetch = FetchType.LAZY)
 	private Medicine medicine;
 	
 	@Column(name = "sales_count")
@@ -52,8 +53,8 @@ public class Sales {
 		return id;
 	}
 
-	public Staff getStaff() {
-		return staff;
+	public String getUserName() {
+		return userName;
 	}
 
 	public Medicine getMedicine() {
@@ -76,8 +77,8 @@ public class Sales {
 		this.id = id;
 	}
 
-	public void setStaff(Staff staff) {
-		this.staff = staff;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 	public void setMedicine(Medicine medicine) {
@@ -95,5 +96,6 @@ public class Sales {
 	public void setMoney(Float money) {
 		this.money = money;
 	}
+
 	
 }

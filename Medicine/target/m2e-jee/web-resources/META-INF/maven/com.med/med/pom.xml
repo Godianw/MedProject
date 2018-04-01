@@ -165,10 +165,38 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
     		<version>5.2.2.Final</version>
 		</dependency>
 		
+		<!-- Hibernate-c3p0 -->
+		<dependency>
+		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-c3p0</artifactId>
+		    <version>5.2.2.Final</version>
+		</dependency>
+		
+		<!-- c3p0 -->
+		<dependency>
+		    <groupId>com.mchange</groupId>
+		    <artifactId>c3p0</artifactId>
+		    <version>0.9.5.2</version>
+		</dependency>
+		
+		<!-- mchange common -->
+		<dependency>
+		    <groupId>com.mchange</groupId>
+		    <artifactId>mchange-commons-java</artifactId>
+		    <version>0.2.15</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>javax.el</groupId>
 			<artifactId>el-api</artifactId>
 			<version>2.2</version>
+		</dependency>
+		
+		<!-- ****************  Jedis *************************  -->
+		<dependency>
+		    <groupId>redis.clients</groupId>
+		    <artifactId>jedis</artifactId>
+		    <version>2.9.0</version>
 		</dependency>
 		
 		<!-- ****************  Web Commons  ******************  -->

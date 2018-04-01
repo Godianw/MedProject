@@ -3,6 +3,7 @@ package com.med.service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +52,7 @@ public class UserService {
 		map.put("id", user.getId());
 		map.put("username", user.getUsername());
 		map.put("name", user.getName());
+		map.put("phone", user.getPhone());
 		map.put("roles", getRolesList(user.getRoles()));
 		map.put("state", user.getState());
 		
@@ -66,7 +68,8 @@ public class UserService {
 		return condition.replaceAll(" id ", " u.id ")
 				.replaceAll(" username ", " u.username ")
 				.replaceAll(" name ", " u.name ")
-				.replace(" state ", " u.state");
+				.replaceAll(" phone ", " u.phone ")
+				.replaceAll(" state ", " u.state ");
 	}
 	
 	/**
@@ -123,7 +126,7 @@ public class UserService {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private Set<Role> getRolesSet(String rolesList) {
+	public Set<Role> getRolesSet(String rolesList) {
 		Set<Role> rolesSet = new HashSet<Role>();
 		String[] roles = rolesList.split(",");
 		for (int i = 0; i < roles.length; ++ i) {
@@ -153,9 +156,12 @@ public class UserService {
 	public void saveUser(Map<String, Object> userMap) {
 		
 		User user = new User();
-		user.setId(Integer.valueOf((String) userMap.get("id")));
+		if (userMap.get("id") != null)
+			user.setId(Integer.valueOf((String) userMap.get("id")));
 		user.setUsername((String) userMap.get("username"));
 		user.setName((String) userMap.get("name"));
+		if (userMap.get("phone") != null)
+			user.setPhone((String) userMap.get("phone"));
 		user.setRoles(getRolesSet((String) userMap.get("roles")));
 		user.setState(getStateFromString((String) userMap.get("state")));
 		
@@ -178,5 +184,58 @@ public class UserService {
 		
 		userDao.delete(id);
 		return true;
+	}
+	
+	/**
+	 * 检查用户名和密码是否匹配
+	 * @param username
+	 * @param password
+	 * @return
+	 */
+	public User findUserByUsernameAndPassword(
+			String username, String password) {
+		return userDao.findByUserAndPassword(username, password);
+	}
+	
+	/**
+	 * 查找用户姓名集合
+	 * @return
+	 */
+	public List<User> findUserNameList() {
+		
+		List<User> resultList = new ArrayList<User>();
+		Iterator<?> iterator = userDao.findAllName().iterator();
+		while (iterator.hasNext()) {
+			Object[] obj = (Object[]) iterator.next();
+			User user = new User();
+			user.setId(Integer.valueOf(obj[0].toString()));
+			user.setName(obj[1].toString());
+			resultList.add(user);
+		}
+		
+		return resultList;
+	}
+	
+	/**
+	 * 保存用户个人信息
+	 * @param user
+	 * @return
+	 */
+	public User savePersonalInfo(User user) {
+		if (user.getId() == null)
+			return null;
+		
+		User oldUser = userDao.findOne(user.getId());
+		if (user.getPassword() == null
+				|| user.getPassword().isEmpty()) 
+			user.setPassword(oldUser.getPassword());
+		
+		user.setUsername(oldUser.getUsername());
+		user.setRoles(oldUser.getRoles());
+		user.setState(oldUser.getState());
+		
+		userDao.update(user);
+		
+		return userDao.findOne(user.getId());
 	}
 }

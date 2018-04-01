@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
 
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.itextpdf.io.font.otf.GlyphLine.IGlyphLineFilter;
 import com.med.entity.DTRequestParam;
 import com.med.entity.User;
 import com.med.service.UserService;
@@ -106,6 +108,30 @@ public class UserController {
 		if (userService.delete(id))
 			resultMap.put("resultCode", "200");
 		
+		return resultMap;
+	}
+	
+	@RequestMapping("/find_name.do")
+	@ResponseBody
+	public Object findAllName() {
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("resultCode", "200");
+		resultMap.put("data", userService.findUserNameList());
+		
+		return resultMap;
+	}
+	
+	@RequestMapping("/saveInfo.do")
+	@ResponseBody
+	public Object savePersionalInfo(User user, HttpSession session) {
+		
+		Map<String, String> resultMap = new HashMap<String, String>();
+		User newUser = userService.savePersonalInfo(user);
+		if (newUser != null) {
+			resultMap.put("resultCode", "200");
+			session.setAttribute("user", newUser);
+		}
+	
 		return resultMap;
 	}
 }

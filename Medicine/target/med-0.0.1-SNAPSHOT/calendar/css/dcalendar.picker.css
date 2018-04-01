@@ -71,6 +71,5 @@
 .calendar #today:active { color: #000; }
 .calendar #currDay { color:#22A7F0; }
 .datepicker {
-	background: url('./icon.png') transparent right no-repeat;
 	background-size: contain;
 }

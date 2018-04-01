@@ -26,7 +26,7 @@
     *********************************************************************************************************************************************************** -->
     <!--main content start-->
     <section id="main-content">
-      <section class="wrapper">
+      <section class="wrapper site-min-height">
         <div class="row mt">
           <div class="col-md-12">
             <div class="panel panel-default">
@@ -35,9 +35,9 @@
                 <select onchange="change_inventoryCount()" 
                   class="myform-control"
                   id="date_select">
-                  <option value="1">近一周</option>
-                  <option value="2">近一个月</option>
-                  <option value="3">近一年</option> 
+                  <option value="1">近7天</option>
+                  <option value="2">近30天</option>
+                  <option value="3">近365天</option> 
                 </select>
                 
                 <select onchange="change_inventoryCount()" 
@@ -89,7 +89,18 @@
   
   <script type="text/javascript">
 	 //基于准备好的dom，初始化echarts实例
-  	 var inventoryChart = echarts.init(document.getElementById('main'));
+  	 var inventoryChart = echarts.init(document.getElementById('main'),
+  			 {
+        		noDataLoadingOption :{
+        		    text: '暂无数据',
+        		    effect:'bubble',
+        		    effectOption : {
+        		        effect: {
+        		            n: 0 //气泡个数为0 
+        		        }
+        		    }
+        		 }
+  			 });
 	 
   	 $(function() {
 	 	change_inventoryCount();
@@ -109,18 +120,41 @@
 		  * dimension:维度
 		  * dataSource:数据源
 		  */
-		 var limitDay, optype, titleText = "", dataSource = "";
+		 var limitDay, optype, selectType, legend = "";
+		 var titleText = "", dataSource = "";
 		 if (dateSelect == 1) {
 			 limitDay = 7;
 			 titleText = "近7天内";
 		 }
+		 if (dateSelect == 2) {
+			 limitDay = 30;
+			 titleText = "近30天内";
+		 }
+		 if (dateSelect == 3) {
+			 limitDay = 365;
+			 titleText = "近365天内";
+		 }
 		 
 		 if (opSelect == 1) {
-			 titleText += "入库"
+			 optype = false;
+			 titleText += "入库";
+			 legend += "入库";
+		 }
+		 if (opSelect == 2) {
+			 optype = true;
+			 titleText += "出库";
+			 legend += "出库";
 		 }
 		 
 		 if (typeSelect == 1) {
-			 titleText += "次数"
+			 selectType = true;
+			 titleText += "次数";
+			 legend += "次数";
+		 }
+		 if (typeSelect == 2) {
+			 selectType = false;
+			 titleText += "数量";
+			 legend += "数量";
 		 }
 		 
 		 titleText += "前五的药品统计图"
@@ -130,8 +164,9 @@
   			url: '/med/inventoryCount/getIhDataSource.do',
   			type: 'POST',
   			data: {
-  				limitDay: 7,
-  				optype: true
+  				limitDay: limitDay,
+  				optype: optype,
+  				type: selectType
   			},
   			success: function(result) {
   				inventoryChart.setOption({
@@ -144,34 +179,37 @@
   				            type: 'shadow'
   				        }
   				    },
-  				    legend: {
-  				    	data: ['入库'] 
+  				    dataset: {
+  				    	dimensions: ['product', legend],
+  				    	source: result.dataSource
   				    },
   				  	grid: {
   			        	left: '3%',
-  			        	right: '4%',
+  			        	right: '8%',
   			        	bottom: '3%',
   			        	containLabel: true
   			    	},
   			    	xAxis: {
-  			    		name: '入库次数',
-  			    		nameLocation : 'end', // 位置
   			          	type: 'value',
   			          	boundaryGap: [0, 0.01]	// 坐标轴两端留白策略
   			      	},
   			      	yAxis : {
   			      		name: '药品名称',
-			    		nameLocation : 'end', // 位置
-			    		data: ['黄连上清片', '狗尾草', '大豆', '花生', '枸杞']
+			    		nameLocation : 'end',	// 位置
+			    		type: 'category'
   			      	},
   			      	series: [{
-  			      		name: '入库',
+  			      		name: legend,
   			      		type: 'bar',
-  			      		data: [15, 10, 3, 2, 0]
+  			      		encode: {
+  		                	x: legend,
+  		                	// 将 "product" 列映射到 Y 轴。
+  		                	y: 'product'
+  		            	}
   			      	}]
-  				}{
+  				}, {
 					notMerge : true,  // 不融合旧数据
-					lazyUpdate: true, // 不立即更新
+					lazyUpdate: false, // 立即更新
 				});
   				
   				inventoryChart.hideLoading();

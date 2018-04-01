@@ -26,7 +26,7 @@
     *********************************************************************************************************************************************************** -->
     <!--main content start-->
     <section id="main-content">
-      <section class="wrapper">
+      <section class="wrapper site-min-height">
         <div class="row mt">
           <div class="col-md-12">
             <div class="content-panel">
@@ -36,15 +36,16 @@
                   <i class="fa fa-angle-right"></i>销售管理<hr>
                 </h4>
                 <h5>
-                  <a href="javascrpt:;" data-toggle="modal" 
-                    data-target="#add" class="mylink">
+                  <a href="#" data-toggle="modal" 
+                    data-target="#add" class="mylink"
+                    th:if="${@roleService.userHasPrivilege(session.user.id, '添加销售记录')}">
                     <i class="fa fa-plus fa-lg"></i> 添加销售记录
                   </a>
-                  <a href="javascrpt:;" data-toggle="modal" 
+                  <a href="#" data-toggle="modal" 
                     data-target="#filter" class="mylink">
                     <i class="fa fa-filter fa-lg"></i> 筛选
                   </a>
-                  <a href="javascrpt:;" class="mylink"
+                  <a href="#" class="mylink"
                     onclick="sales_refresh()">
                     <i class="fa fa-refresh fa-lg"></i> 显示全部
                   </a>
@@ -53,7 +54,7 @@
                 <thead>
                   <tr>
                     <th>编号</th>
-                    <th>操作员工</th>
+                    <th>操作人员</th>
                     <th>药品名称</th>
                     <th>数量</th>
                     <th>日期</th>
@@ -104,21 +105,25 @@
         <div class="modal-body">
           <div class="form-panel">
             <form class="form-horizontal style-form" id="form_add">
-              <!-- 员工名称 -->
-              <div class="form-group" style="padding-bottom:0px;">
+              <!-- 操作人员 -->
+        <!--       <div class="form-group" style="padding-bottom:0px;">
                 <label class="col-sm-2 col-sm-2 control-label"
-                   style="font-size:12px;">员工</label>
+                   style="font-size:12px;">
+                   <b style="color:red;">* </b>操作人员</label>
                 <div class="col-sm-10">
-                  <select class="myform-control" name="staff.id"
+                 <select class="myform-control" name="staff.id"
                     id="staff_add">
-                    <option value="">--请选择员工--</option>
-                  </select>
+                    <option value="">--请选择操作员工--</option>
+                  </select>  
                 </div>
-              </div>
+              </div>  -->
+              
+              <input type="hidden" name="userName" id="user_add">
               
               <!-- 药品 -->
               <div class="form-group" style="padding-bottom:0px;">
-                <label class="col-sm-2 col-sm-2 control-label">联系人</label>
+                <label class="col-sm-2 col-sm-2 control-label">
+                <b style="color:red;">* </b>药品名称</label>
                 <div class="col-sm-10">
                   <select class="myform-control" name="medicine.id"
                     id="med_add">
@@ -127,33 +132,36 @@
                 </div>
               </div>
               
+              <!-- 当前库存数量 -->
+              <div class="form-group" style="padding-bottom:0px;"
+                id="div_count">
+                <label class="col-sm-2 col-sm-2 control-label"
+                  style="font-size:12px;">当前库存量</label>
+                <div class="col-sm-10">
+                  <label class="form-control-static"
+                   id="curquantity_add"></label>
+                </div>
+              </div>
+              
               <!-- 数量 -->
               <div class="form-group" style="padding-bottom:0px;">
-                <label class="col-sm-2 col-sm-2 control-label">数量</label>
+                <label class="col-sm-2 col-sm-2 control-label">
+                <b style="color:red;">* </b>销售数量</label>
                 <div class="col-sm-10">
                   <input type="text" class="myform-control" 
-                  placeholder="数量" id="count_add" name="count">
+                  placeholder="销售数量" id="count_add" name="count">
                 </div>
               </div>
               
               <!-- 日期 -->
               <div class="form-group" style="padding-bottom:0px;">
-                <label class="col-sm-2 col-sm-2 control-label">日期</label>
+                <label class="col-sm-2 col-sm-2 control-label">
+                <b style="color:red;">* </b>销售日期</label>
                 <div class="col-sm-10">
                   <input type="text" class="myform-control"
-                    placeholder="日期" id="mydatepicker" name="datetime">
+                    placeholder="销售日期" id="mydatepicker" name="datetime">
                 </div>
-              </div>       
-              
-              <!-- 总金额 -->
-              <div class="form-group" style="padding-bottom:0px;">
-                <label class="col-sm-2 col-sm-2 control-label">总金额</label>
-                <div class="col-sm-10">
-                                            ￥<input type="text" class="myform-control"
-                    placeholder="总金额" id="money_add" name="money">
-                </div>
-              </div>     
-              
+              </div>  
             </form>
           </div>
         </div>
@@ -212,24 +220,24 @@
                 </div>
               </div>
               
-              <!-- 员工名称 -->
-              <div class="form-group" style="padding-bottom:0px;">
-                <label class="col-sm-2 col-sm-2 control-label">员工</label>
+              <!-- 操作人员 -->
+       <!--       <div class="form-group" style="padding-bottom:0px;">
+                <label class="col-sm-2 col-sm-2 control-label">操作人员 </label>
                 <div class="col-sm-10">
-                  <select class="myform-control" name="staff.id"
-                    id="staff_filter">
-                    <option value="">--请选择员工--</option>
+                  <select class="myform-control" name="user.id"
+                    id="user_filter">
+                    <option value="">--请选择操作人员--</option>
                   </select>
                 </div>
-              </div>
+              </div>  -->
               
               <!-- 药品名称 -->
               <div class="form-group" style="padding-bottom:0px;">
-                <label class="col-sm-2 col-sm-2 control-label">药品</label>
+                <label class="col-sm-2 col-sm-2 control-label">药品名称</label>
                 <div class="col-sm-10">
                   <select class="myform-control" name="med.id"
                     id="med_filter">
-                    <option value="">--请选择药品--</option>
+                    <option value="">--请选择药品名称--</option>
                   </select>
                 </div>
               </div>
@@ -304,7 +312,7 @@
      		// 设置各列对应的数据列，并且禁用第四列和第六列的排序
      		 columns: [ 
      		 	{"data" : "id"}, 
-               	{"data" : "staff.name"}, 
+               	{"data" : "userName"}, 
                	{"data" : "medicine.name"}, 
              	{"data" : "count"}, 
              	{"data" : "datetime"}, 
@@ -317,11 +325,15 @@
                  	targets : 6,
              	 	render : function(data, type, row) {
              	 		var id = row.id;
-             	 		var html = '<button class="btn btn-danger btn-xs" '
-                             + 'data-toggle="modal" data-target="#delete"  '
-                             + 'title="删除" onclick="change_delId('+id+')"> '
-                             + '<i class="fa fa-trash-o "></i></button>';
-                         return html;
+             	 		var html = '';
+             	 		
+             	 		if ([[${@roleService.userHasPrivilege(session.user.id, '删除销售记录')}]]) {
+             	 			html += '<button class="btn btn-danger btn-xs" '
+                               + 'data-toggle="modal" data-target="#delete"  '
+                               + 'title="删除" onclick="change_delId('+id+')"> '
+                               + '<i class="fa fa-trash-o "></i></button>';
+             	 		}
+                        return html;
              	 	}
               	}, {
               		targets: [2, 3, 6],
@@ -366,32 +378,84 @@
       });
       
    	  // 初始化日期框
-      $('#mydatepicker').dcalendarpicker({
+   /*   $('#mydatepicker').dcalendarpicker({
   		 format:'yyyy/mm/dd'
-  	  }); 
+  	  }); */
+  	  
+  	  // 初始化日期选择器
+  	  laydate.render({
+  	      elem: '#mydatepicker', 		 // 指定元素
+  	      type: 'datetime',				 // 日期类型
+  	      format: 'yyyy/MM/dd HH:mm:ss', // 日期格式
+  	      max: getCurDateTime()
+  	  });
+  	  
+  	  function getCurDateTime() {
+  	      var time = new Date();
+  	      var year = time.getFullYear();
+  	  	  var month = time.getMonth() + 1;
+  	      var date = time.getDate(); 
+  	  	  var h = time.getHours();       //获取当前小时数(0-23)
+    	  var m = time.getMinutes();     //获取当前分钟数(0-59)
+    	  var s = time.getSeconds();  
+    	  var now = year + '/' + p(month) + "/" + p(date) 
+    	  		+ " " + p(h) + ':' + p(m) + ":" + p(s);
+    	  		
+    	  return now;
+      }
+      
+      function p(s) {
+    	  return s < 10 ? '0' + s: s;
+      }
    	  
       $('#add').on('show.bs.modal', function () {
     	  // 加载下拉框数据 
-    	  var staffHtml = $('#staff_add').html();
+    /*	  var staffHtml = '<option value="">--请选择操作人员--</option>';
     	  staffHtml += getStaffName();
-    	  $('#staff_add').html(staffHtml);
+    	  $('#staff_add').html(staffHtml);*/
     	  
-    	  var medHtml = $('#med_add').html();
+    	  var medHtml = '<option value="">--请选择销售药品--</option>';
     	  medHtml += getMedName();
     	  $('#med_add').html(medHtml);
+    	  
+    	  $('#div_count').hide();
       });
       
+      // 根据所选药品改变当前库存量
+      $('#med_add').change(function(){
+    	  var medId = $('#med_add').val();
+    	  if (medId == null || medId == "") {
+    		  $('#div_count').hide();
+    		  return ;
+    	  }
+    	  
+    	  $('#div_count').show();
+    	  
+    	  $.ajax({
+    		  type : "POST",
+    		  url : "/med/inventory/find_quantity.do",
+    		  data : {
+    			  id : medId
+    		  },
+    		  success : function(quantity) {
+    			  $('#curquantity_add').html(quantity);
+    		  },
+    		  error : function() {
+    			  console.log("服务器异常，药品库存获取失败");
+    		  }
+    	  });
+      });
       
-      var curStaff;
+      var curUser;
       var curMed;
       $('#filter').on('show.bs.modal', function () {
     	  // 加载下拉框数据 
-    	  var staffHtml = '<option value="">--请选择员工--</option>';
-    	  staffHtml += getStaffName();
-    	  $('#staff_filter').html(staffHtml);
-    	  $('#staff_filter').val(curStaff);
+    /*	  var userHtml = '<option value="">--请选择操作人员--</option>';
+    	  userHtml += getUserName();
+    	  $('#user_filter').html(userHtml);
+    	  $('#user_filter').val(curUser);*/
     	  
-    	  var medHtml = '<option value="">--请选择药品--</option>';
+    	  var medHtml = '<option value="">--请选择销售药品--</option>';
     	  medHtml += getMedName();
     	  $('#med_filter').html(medHtml);
     	  $('#med_filter').val(curMed);
@@ -400,11 +464,21 @@
       // 添加
       function sales_add() {
     	  // 表单验证
-    	  $('#staff_add').validate("员工");
     	  $('#med_add').validate("药品");
     	  $('#count_add').validate("数量");
     	  $('#mydatepicker').validate("日期");
-    	  $('#money_add').validate("总金额");
+    	  
+    	  var salesquantity = $('#count_add').val();
+    	  var curquantity = $('#curquantity_add').text();
+    	  
+    	  if (parseInt(salesquantity) > parseInt(curquantity)) {
+    		  layer.msg("销售数量不得超过当前库存量");
+    		  return ;
+    	  }
+    	  
+    	  var userName = '[[${session.user.name}]]';
+    	  console.log(userName);
+    	  $('#user_add').val(userName);
     	  
     	  $.ajax({
      		 type : "POST",
@@ -426,20 +500,19 @@
       function sales_filter() {
     	  condition = "WHERE 1 = 1";
     	  var id = $('#id_filter').val();
-    	  var staff = $('#staff_filter').val();
+    //	  var user = $('#user_filter').val();
     	  var med = $('#med_filter').val();
     	  if (id != "" && id != null) {
     		  condition += " AND id = " + id; 
     	  }
-    	  if (staff != "" && staff != null) {
-    		  condition += " AND staff.id = " + staff;
-    	  }
+    /*	  if (user != "" && user != null) {
+    		  condition += " AND userName = '" + staff + "'";
+    	  }*/
     	  if (med != "" && med != null) {
     		  condition += " AND medicine.id = " + med;
     	  }
     	  
     	  // 获取当前下拉框选项
-    	  curStaff = $('#staff_filter').val();
 		  curMed = $('#med_filter').val();
     	  
     	  var newUrl = '/med/sales/data_source.do?pageNum=1&condition=' + condition;
@@ -447,25 +520,6 @@
     	  
     	  $('#filter').modal('hide');
    	  }
-   	  
-      function getStaffName() {
-    	  var html = "";
-    	  
-    	  $.ajax({
-    		  type : "POST",
-    		  url : "/med/staff/find_name.do",
-    		  async : false,
-    		  success : function(result) {
-    			  var data = result.data;
-    			  $.each(data, function(index, staff) {
-    				 html += "<option value='" + staff.id + "'>"
-    				 	+ staff.name + "</option>";
-    			  });
-    		  }
-    	  });
-    	  
-    	  return html;
-      }
       
 	  function getMedName() {
 		  var html = "";
@@ -491,6 +545,8 @@
     	  
     	  var newUrl = '/med/sales/data_source.do?pageNum=1';
     	  table.ajax.url(newUrl).load();
+    	  
+    	  document.getElementById("form_filter").reset(); 
       }
 	  
 	  var curDelId;

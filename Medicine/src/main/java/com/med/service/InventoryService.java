@@ -97,7 +97,7 @@ public class InventoryService {
 	 * 更新库存
 	 * @param id 药品编号
 	 * @param quantity 库存变化数
-	 * @param type 变化类型（1=入库，2=出库）
+	 * @param type 变化类型（0=入库，1=出库）
 	 */
 	public boolean updateQuantity(Integer id, Integer quantity, Integer type) {
 		

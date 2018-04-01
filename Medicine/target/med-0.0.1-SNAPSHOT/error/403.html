@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org" lang="zh_CN">
+<head th:replace="common/common_head::common_head('403')"></head>
+
+<body>
+  <section id="container">
+    <!-- **********************************************************************************************************************************************************
+      TOP BAR CONTENT & NOTIFICATIONS
+    *********************************************************************************************************************************************************** -->
+    <!--header start-->
+    <header th:replace="common/layout::header"></header>
+    <!--header end-->
+
+    <!-- **********************************************************************************************************************************************************
+      MAIN SIDEBAR MENU
+    *********************************************************************************************************************************************************** -->
+    <!--sidebar start-->
+    <aside th:replace="common/layout::sidebar"></aside>
+    <!--sidebar end-->
+
+    <!-- **********************************************************************************************************************************************************
+      MAIN CONTENT
+    *********************************************************************************************************************************************************** -->
+    <!--main content start-->
+    <section id="main-content">
+      <section class="wrapper site-min-height">
+        <div class="row mt">
+          <div class="col-lg-12">
+            <div class="page-header text-center">
+              <h1>
+                <middle>Error </middle>
+                <font size="15"> 403</font>
+              </h1>
+            </div>
+            <h4 class="text-center">您无权访问此页面，有疑问请联系管理员</h4>
+            <h6 class="text-center">You are not authorized to visit
+              this page,please ask admin for helping.</h6>
+          </div>
+        </div>
+      </section>
+      <!--/wrapper -->
+    </section>
+    <!-- /MAIN CONTENT -->
+    
+    <!--main content end-->
+
+    
+    <!-- **********************************************************************************************************************************************************
+      MAIN FOOTER
+    *********************************************************************************************************************************************************** -->
+    <!--footer start-->
+    <footer th:replace="common/layout::footer"></footer>
+    <!--footer end-->
+  </section>
+
+  <!-- common js -->
+  <div th:include="common/common_js::common_js" th:remove="tag"></div>
+  
+  <!--script for this page-->
+  
+
+</body>
+</html>

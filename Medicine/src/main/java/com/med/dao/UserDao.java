@@ -41,6 +41,16 @@ public class UserDao extends BaseDao {
 	}
 	
 	/**
+	 * 查找用户姓名集合
+	 * @return
+	 */
+	public List findAllName() {
+		return currentSession()
+				.createQuery("select id,name FROM User")
+				.list();
+	}
+	
+	/**
 	 * 查找单个用户
 	 * @param id
 	 * @return
@@ -65,8 +75,13 @@ public class UserDao extends BaseDao {
 	public void update(User user) {
 		User tmpUser = findOne(user.getId());
 		
+		if (user.getPassword() != null 
+				&& !user.getPassword().equals(""))
+			tmpUser.setPassword(user.getPassword());
+		
 		tmpUser.setUsername(user.getUsername());
 		tmpUser.setName(user.getName());
+		tmpUser.setPhone(user.getPhone());
 		tmpUser.setRoles(user.getRoles());
 		tmpUser.setState(user.getState());
 		
@@ -83,14 +98,17 @@ public class UserDao extends BaseDao {
 	}
 	
 	/**
-	 * 更新用户角色
-	 * @param id
-	 * @param roles
+	 * 查询用户名和密码是否匹配正确
+	 * @param username
+	 * @param password
+	 * @return
 	 */
-	public void updateRoles(int id, Set<Role> roles) {
-		User user = findOne(id);
-		
-		user.setRoles(roles);
-		currentSession().update(user);
+	public User findByUserAndPassword(
+			String username, String password) {
+		return  (User) currentSession().createQuery(
+				"FROM User WHERE username = '" + username 
+				+ "' AND password = '" + password
+				+ "' AND state = 1")
+				.uniqueResult();
 	}
 }

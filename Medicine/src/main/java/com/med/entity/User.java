@@ -14,9 +14,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Table(name = "tbl_user")
@@ -42,6 +45,10 @@ public class User {
 	@Basic(fetch = FetchType.LAZY)
 	private String name;
 	
+	@Column(name = "user_phone")
+	@Basic(fetch = FetchType.LAZY)
+	private String phone;
+	
 	@Column(name = "user_password")
 	@Basic(fetch = FetchType.LAZY)
 	private String password;
@@ -52,10 +59,11 @@ public class User {
 	 * inverseJoinColumns定义另一在中间表的主键映射
 	 */
 	@ManyToMany
-	@Cascade(CascadeType.REFRESH)
+	@Cascade(CascadeType.SAVE_UPDATE)
 	@JoinTable(name = "tbl_user_role",
 			joinColumns = {@JoinColumn(name = "ur_user_id")},		
 			inverseJoinColumns = {@JoinColumn(name = "ur_role_id")})
+	@Fetch(value = FetchMode.JOIN)
 	private Set<Role> roles = new HashSet<Role>();
 	
 	@Column(name = "user_state")
@@ -72,6 +80,10 @@ public class User {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getPhone() {
+		return phone;
 	}
 
 	public String getPassword() {
@@ -98,6 +110,10 @@ public class User {
 		this.name = name;
 	}
 
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -109,5 +125,6 @@ public class User {
 	public void setState(Boolean state) {
 		this.state = state;
 	}
+
 	
 }
