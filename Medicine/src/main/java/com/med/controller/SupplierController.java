@@ -53,13 +53,14 @@ public class SupplierController {
 			HttpServletRequest request
 			) {
 		
+		int recordsTotal = supplierService.findSuppliers(
+				dtParams.getConditionSql()).size(); 
+		int curIndex = dtParams.getCurPageStartIndex();
 		// 获取供应商数据列表
 		List list = supplierService.findSuppliersByPaging(
 				dtParams.getConditionSql(), 
-				dtParams.getCurPageStartIndex(), 
+				(curIndex >= recordsTotal ? 0 : curIndex), 
 				dtParams.getLength());
-		int recordsTotal = supplierService.findSuppliers(
-				dtParams.getConditionSql()).size(); 
 		int pageTotal = DataEncapUtil.getPageTotal(
 				recordsTotal, dtParams.getLength());
 		
@@ -126,24 +127,11 @@ public class SupplierController {
 		// 填充数据
 		String[] columnName = new String[] {
 				"编号", "供应商", "联系人", "联系电话", "城市"};
-		List<List> dataList = new ArrayList<List>();
-		List<Supplier> supplierList = supplierService.findSuppliers(
-				"ORDER BY id DESC");
-		// 将供应商集合装入数组集合中
-		for (Supplier supplier : supplierList) {
-			List<Object> singleData = new ArrayList<Object>();
-			singleData.add(supplier.getId());
-			singleData.add(supplier.getName());
-			singleData.add(supplier.getContacts());
-			singleData.add(supplier.getContactPhone());
-			singleData.add(supplier.getCity());
-			dataList.add(singleData);
-		}
+		List<List> dataList = supplierService.getDataList();
 		
 		// 将数据封装成pdf并写入response中
-		PdfUtil pdfUtil = new PdfUtil(fileName, "供应商表", 
-				columnName, dataList);
-		pdfUtil.writeOutPdf(out);
+		new PdfUtil().writeOutPdf("供应商表", 
+				columnName, dataList, out);
 
 		if (out != null) {
 			out.close();
@@ -166,34 +154,21 @@ public class SupplierController {
 		fileName = new String(fileName.getBytes("gb2312"), "iso8859-1");
 		response.addHeader("Content-Disposition", 
 				new StringBuffer("attachment;filename=") 
-		.append(fileName)
-		.append(".").append(suffix).toString());  
+			.append(fileName)
+			.append(".").append(suffix).toString());  
 		response.setContentType("application/vnd.ms-excel;charset=gb2312");
 		OutputStream out = new BufferedOutputStream(response.getOutputStream());
 		
 		// 填充数据
 		String[] columnName = new String[] {
 				"编号", "供应商", "联系人", "联系电话", "城市"};
-		List<List> dataList = new ArrayList<List>();
-		List<Supplier> supplierList = supplierService.findSuppliers(
-				"ORDER BY id DESC");
-		// 将供应商集合装入数组集合中
-		for (Supplier supplier : supplierList) {
-			List<Object> singleData = new ArrayList<Object>();
-			singleData.add(supplier.getId());
-			singleData.add(supplier.getName());
-			singleData.add(supplier.getContacts());
-			singleData.add(supplier.getContactPhone());
-			singleData.add(supplier.getCity());
-			dataList.add(singleData);
-		}
+		List<List> dataList = supplierService.getDataList();
 		
 		ExcelSuffix excelSuffix = suffix.equals("xlsx") ? 
 				ExcelSuffix.XLSX : ExcelSuffix.XLS;
 		// 将数据封装成excel并写入response中
-		ExcelUtil excelUtil = new ExcelUtil(fileName, "供应商表", 
-				columnName, dataList, excelSuffix);
-		excelUtil.writeOutExcel(out);
+		new ExcelUtil().writeOutExcel("供应商表", 
+				columnName, dataList, excelSuffix, out);
 
 		if (out != null) {
 			out.close();

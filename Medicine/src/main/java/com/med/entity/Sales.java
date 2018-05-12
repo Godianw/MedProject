@@ -12,6 +12,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 @Entity
 @Table(name = "tbl_sales")
 public class Sales {
@@ -28,23 +32,39 @@ public class Sales {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	@Column(name = "sales_user_name")
-	@Basic(fetch = FetchType.LAZY)
-	private String userName;
+	/**
+	 * 操作人的用户名
+	 */
+	@ManyToOne(cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "sales_user_id")
+	@Fetch(value = FetchMode.JOIN)
+	private User user;
 	
+	/**
+	 * 销售药品
+	 */
 	@ManyToOne(cascade = {CascadeType.REFRESH})
 	@JoinColumn(name = "sales_med_id")
 	@Basic(fetch = FetchType.LAZY)
 	private Medicine medicine;
 	
+	/**
+	 * 销售数量
+	 */
 	@Column(name = "sales_count")
 	@Basic(fetch = FetchType.LAZY)
 	private Integer count;
 	
+	/**
+	 * 销售日期
+	 */
 	@Column(name = "sales_datetime")
 	@Basic(fetch = FetchType.LAZY)
 	private String datetime;
 	
+	/**
+	 * 总金额
+	 */
 	@Column(name = "sales_money")
 	@Basic(fetch = FetchType.LAZY)
 	private Float money;
@@ -53,8 +73,8 @@ public class Sales {
 		return id;
 	}
 
-	public String getUserName() {
-		return userName;
+	public User getUser() {
+		return user;
 	}
 
 	public Medicine getMedicine() {
@@ -77,8 +97,8 @@ public class Sales {
 		this.id = id;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	public void setMedicine(Medicine medicine) {
@@ -96,6 +116,8 @@ public class Sales {
 	public void setMoney(Float money) {
 		this.money = money;
 	}
+
+	
 
 	
 }

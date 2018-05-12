@@ -14,7 +14,7 @@
       </div>
       <!--logo start-->
       <a href="/med/index/main.do" class="logo"><b>药品进销存管理系统</b></a>
-      
+ 
       <div class="top-menu">
         <ul class="nav pull-right top-menu">
           <li><a class="logout" href="/med/personalInfo.do">个人信息</a></li>
@@ -48,10 +48,10 @@
           </a></li>
           
           <li class="sub-menu"
-            th:if="${@roleService.userHasPrivilege(session.user.id, '基本信息管理')}">
+            th:if="${@roleService.userHasPrivilege(session.user.id, '基础信息管理')}">
             <a href="#"> 
               <i class="fa fa-file-text"></i> 
-              <span>基本信息管理</span>
+              <span>基础信息管理</span>
             </a>
             <ul class="sub">
               <li th:if="${@roleService.userHasPrivilege(session.user.id, '药品信息管理')}">
@@ -63,7 +63,8 @@
        <!--       <li th:if="${@roleService.userHasPrivilege(session.user.id, '员工管理')}">
                 <a href="/med/staff/info.do">员工管理</a>
               </li>  -->
-            </ul></li>
+            </ul>
+          </li>
       
           <li class="sub-menu"
             th:if="${@roleService.userHasPrivilege(session.user.id, '销售管理')}">
@@ -90,7 +91,7 @@
           <li class="sub-menu"
             th:if="${@roleService.userHasPrivilege(session.user.id, '数据报表')}">
             <a href="#"> 
-              <i class="fa fa-table"></i> 
+              <i class="fa fa-bar-chart-o"></i> 
               <span>数据报表</span>
             </a>
             <ul class="sub">

@@ -52,12 +52,13 @@ public class SalesController {
 			@ModelAttribute DTRequestParam dtParams,
 			HttpServletRequest request
 			) {
-		List list = salesService.findSalesByPaging(
-				dtParams.getConditionSql(), 
-				dtParams.getCurPageStartIndex(),
-				dtParams.getLength());
 		int recordsTotal = salesService.findSales(
 				dtParams.getConditionSql()).size();
+		int curIndex = dtParams.getCurPageStartIndex();
+		List list = salesService.findSalesByPaging(
+				dtParams.getConditionSql(), 
+				(curIndex >= recordsTotal ? 0 : curIndex),
+				dtParams.getLength());
 		int pageTotal = DataEncapUtil.getPageTotal(
 				recordsTotal, dtParams.getLength());
 		
@@ -74,7 +75,7 @@ public class SalesController {
 	public Object save(Sales sales) {
 		
 		salesService.save(sales);
-		Map resultMap = new HashMap<String, String>();
+		Map<String, String> resultMap = new HashMap<String, String>();
 		resultMap.put("resultCode", "200");
 
 		return resultMap;
@@ -115,25 +116,11 @@ public class SalesController {
 		// 填充数据
 		String[] columnName = new String[] {
 				"编号", "操作人员", "药品名", "数量", "日期", "总金额"};
-		List<List> dataList = new ArrayList<List>();
-		List<Sales> salesList = salesService.findSales(
-				"ORDER BY id DESC");
-		// 将销售集合装入数组集合中
-		for (Sales sales : salesList) {
-			List<Object> singleData = new ArrayList<Object>();
-			singleData.add(sales.getId());
-			singleData.add(sales.getUserName());
-			singleData.add(sales.getMedicine());
-			singleData.add(sales.getCount());
-			singleData.add(sales.getDatetime());
-			singleData.add(sales.getMoney());
-			dataList.add(singleData);
-		}
+		List<List> dataList = salesService.getDataList();
 		
 		// 将数据封装成pdf并写入response中
-		PdfUtil pdfUtil = new PdfUtil(fileName, "销售信息表", 
-				columnName, dataList);
-		pdfUtil.writeOutPdf(out);
+		new PdfUtil().writeOutPdf("销售信息表", 
+				columnName, dataList, out);
 
 		if (out != null) {
 			out.close();
@@ -163,28 +150,14 @@ public class SalesController {
 		// 填充数据
 		String[] columnName = new String[] {
 				"编号", "操作人员", "药品名", "数量", "日期", "总金额"};
-		List<List> dataList = new ArrayList<List>();
-		List<Sales> salesList = salesService.findSales(
-				"ORDER BY id DESC");
-		// 将销售集合装入数组集合中
-		for (Sales sales : salesList) {
-			List<Object> singleData = new ArrayList<Object>();
-			singleData.add(sales.getId());
-			singleData.add(sales.getUserName());
-			singleData.add(sales.getMedicine());
-			singleData.add(sales.getCount());
-			singleData.add(sales.getDatetime());
-			singleData.add(sales.getMoney());
-			dataList.add(singleData);
-		}
+		List<List> dataList = salesService.getDataList();
 		
 		ExcelSuffix excelSuffix = ExcelSuffix.XLS;
 		if (suffix.equals("xlsx"))
 			excelSuffix = ExcelSuffix.XLSX;
 		// 将数据封装成excel并写入response中
-		ExcelUtil excelUtil = new ExcelUtil(fileName, "销售信息表", 
-				columnName, dataList, excelSuffix);
-		excelUtil.writeOutExcel(out);
+		new ExcelUtil().writeOutExcel("销售信息表", 
+				columnName, dataList, excelSuffix, out);
 
 		if (out != null) {
 			out.close();

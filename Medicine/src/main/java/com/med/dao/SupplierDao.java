@@ -95,6 +95,16 @@ public class SupplierDao extends BaseDao {
 		return currentSession().createQuery("FROM Supplier " + 
 				(condition == null ? "" : condition))
 				.setFirstResult(startIndex)
-				.setMaxResults(startIndex + recordNum).list();
+				.setMaxResults(recordNum).list();
+	}
+	
+	public Integer findIdByName(String name) {
+		Object obj = currentSession().createQuery(
+				"select id FROM Supplier WHERE name = :name")
+				.setParameter("name", name).uniqueResult();
+		if (obj != null) 
+			return Integer.valueOf(obj.toString());
+		
+		return 0;
 	}
 }

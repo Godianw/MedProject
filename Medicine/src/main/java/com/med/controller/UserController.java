@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.itextpdf.io.font.otf.GlyphLine.IGlyphLineFilter;
 import com.med.entity.DTRequestParam;
 import com.med.entity.User;
 import com.med.service.UserService;
@@ -49,12 +48,15 @@ public class UserController {
 			@ModelAttribute DTRequestParam dtParams,
 			HttpServletRequest request) {
 		
-		List list = userService.findUsersByPaging(
-				dtParams.getConditionSql(),
-				dtParams.getCurPageStartIndex(),
-				dtParams.getLength());
+		
+	
 		int recordsTotal = userService.findUsers(
 				dtParams.getConditionSql()).size();
+		int curIndex = dtParams.getCurPageStartIndex();
+		List list = userService.findUsersByPaging(
+				dtParams.getConditionSql(),
+				(curIndex >= recordsTotal ? 0 : curIndex),
+				dtParams.getLength());
 		int pageTotal = DataEncapUtil.getPageTotal(
 				recordsTotal, dtParams.getLength());
 		

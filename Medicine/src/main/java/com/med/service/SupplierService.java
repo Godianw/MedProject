@@ -104,4 +104,23 @@ public class SupplierService {
 		
 		return resultList;
 	}
+	
+	@SuppressWarnings("rawtypes")
+	public List<List> getDataList() {
+		List<List> dataList = new ArrayList<List>();
+		List<Supplier> supplierList = findSuppliers(
+				"ORDER BY id DESC");
+		// 将供应商集合装入数组集合中
+		for (Supplier supplier : supplierList) {
+			List<Object> singleData = new ArrayList<Object>();
+			singleData.add(supplier.getId());
+			singleData.add(supplier.getName());
+			singleData.add(supplier.getContacts());
+			singleData.add(supplier.getContactPhone());
+			singleData.add(supplier.getCity());
+			dataList.add(singleData);
+		}
+		
+		return dataList;
+	}
 }

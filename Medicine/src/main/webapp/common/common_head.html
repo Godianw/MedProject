@@ -8,6 +8,13 @@
     <meta name="keyword" content="Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
 
  	<title th:text="${title}"></title>
+  
+    <script type="text/javascript" th:inline="javascript">
+        var basePath = /*[[${#httpServletRequest.getScheme() 
+          + "://" + #httpServletRequest.getServerName() 
+          + ":" + #httpServletRequest.getServerPort() 
+          + #httpServletRequest.getContextPath()}]]*/ '/med'; 
+    </script>
 
     <!-- Bootstrap core CSS -->
     <link href="/med/assets/css/bootstrap.css" rel="stylesheet">
@@ -38,6 +45,9 @@
     
     <!-- Layer css -->
     <link href="/med/layer/css/layer.css" rel="stylesheet">
+    
+    <!-- Layui css -->
+    <link href="/med/layui/css/layui.css" rel="stylesheet">
     
     <!-- Custom styles for this template -->
     <link href="/med/custom/css/style.css" rel="stylesheet"> 

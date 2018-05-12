@@ -45,12 +45,13 @@ public class InventoryController {
 			@ModelAttribute DTRequestParam dtParams, 
 			HttpServletRequest request) {
 		
-		List list = inventoryService.findInventorysByPaging(
-				dtParams.getConditionSql(), 
-				dtParams.getCurPageStartIndex(),
-				dtParams.getLength());
 		int recordsTotal = inventoryService.findInventorys(
 				dtParams.getConditionSql()).size();
+		int curIndex = dtParams.getCurPageStartIndex();
+		List list = inventoryService.findInventorysByPaging(
+				dtParams.getConditionSql(), 
+				(curIndex >= recordsTotal ? 0 : curIndex),
+				dtParams.getLength());
 		int pageTotal = DataEncapUtil.getPageTotal(
 				recordsTotal, dtParams.getLength());
 	

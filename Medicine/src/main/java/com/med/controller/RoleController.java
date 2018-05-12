@@ -46,12 +46,13 @@ public class RoleController {
 			@ModelAttribute DTRequestParam dtParams,
 			HttpServletRequest request) {
 		
-		List list = roleService.findRolesByPaging(
-				dtParams.getConditionSql(),
-				dtParams.getCurPageStartIndex(),
-				dtParams.getLength());
 		int recordsTotal = roleService.findRoles(
 				dtParams.getConditionSql()).size();
+		int curIndex = dtParams.getCurPageStartIndex();
+		List list = roleService.findRolesByPaging(
+				dtParams.getConditionSql(),
+				(curIndex >= recordsTotal ? 0 : curIndex),
+				dtParams.getLength());
 		int pageTotal = DataEncapUtil.getPageTotal(
 				recordsTotal, dtParams.getLength());
 		

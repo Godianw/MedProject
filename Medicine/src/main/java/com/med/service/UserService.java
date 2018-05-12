@@ -81,7 +81,8 @@ public class UserService {
 		List<Map<String, Object>> list = 
 				new ArrayList<Map<String,Object>>();
 		for (User user : userDao.findAll(getUserCondition(condition))) {
-			list.add(getUserMap(user));
+			if (getUserMap(user) != null)
+				list.add(getUserMap(user));
 		}
 		
 		return list;

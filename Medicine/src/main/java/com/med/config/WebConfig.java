@@ -1,10 +1,14 @@
 package com.med.config;
 
+import java.io.IOException;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.multipart.MultipartResolver;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -54,6 +58,12 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 		resolver.setTemplateMode(TemplateMode.HTML);
 		resolver.setCharacterEncoding("UTF-8");
 		return resolver;
+	}
+	
+	// 配置multipart解析器
+	@Bean
+	public MultipartResolver multipartResolver() throws IOException {
+		return new StandardServletMultipartResolver();
 	}
 	
 	// 配置静态资源的处理

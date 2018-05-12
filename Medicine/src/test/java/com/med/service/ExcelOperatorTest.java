@@ -23,13 +23,9 @@ public class ExcelOperatorTest {
 	@SuppressWarnings("rawtypes")
 	public List<List> dataList = new ArrayList<List>();
 	
-	ExcelUtil excelUtil = new ExcelUtil("E:/test.pdf", "供应商表",
-			new String[]{"编号", "供应商", "联系人", "联系电话", "城市"},
-			dataList, ExcelSuffix.XLSX);
+	ExcelUtil excelUtil = new ExcelUtil();
 	
-	PdfUtil pdfUtil = new PdfUtil("E:/test.pdf", "供应商表",
-			new String[]{"编号", "供应商", "联系人", "联系电话", "城市"},
-			dataList);
+	PdfUtil pdfUtil = new PdfUtil();
 	
 	@Test
 	public void test() throws IOException {
@@ -45,7 +41,7 @@ public class ExcelOperatorTest {
 		
 		File pdf = new File("E:/test.pdf");
 		FileOutputStream pdfOut = new FileOutputStream(pdf);
-		pdfUtil.writeOutPdf(pdfOut);
+	//	pdfUtil.writeOutPdf(pdfOut);
 		
 	/*	File excel = new File("E:/test.xlsx");
 		FileOutputStream excelOut = new FileOutputStream(excel);

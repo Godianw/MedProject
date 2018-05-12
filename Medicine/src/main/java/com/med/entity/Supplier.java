@@ -33,14 +33,23 @@ public class Supplier {
 	@Basic(fetch = FetchType.LAZY)
 	private String name;
 	
+	/**
+	 * 联系人
+	 */
 	@Column(name = "supplier_contacts")
 	@Basic(fetch = FetchType.LAZY)
 	private String contacts;
 	
+	/**
+	 * 联系电话
+	 */
 	@Column(name = "supplier_contact_phone")
 	@Basic(fetch = FetchType.LAZY)
 	private String contactPhone;
 	
+	/**
+	 * 所在城市
+	 */
 	@Column(name = "supplier_city")
 	@Basic(fetch = FetchType.LAZY)
 	private String city;

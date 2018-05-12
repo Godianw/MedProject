@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.med.dao.InventoryDao;
 import com.med.dao.SalesDao;
 import com.med.entity.Medicine;
 import com.med.entity.Sales;
@@ -23,7 +24,7 @@ public class SalesService {
 	SalesDao salesDao;
 	
 	@Autowired
-	InventoryService inventoryService;
+	InventoryDao inventoryDao;
 	
 	@Autowired
 	MedicineService medicineService;
@@ -33,9 +34,23 @@ public class SalesService {
 	 * @param condition 条件
 	 * @return 销售记录集合
 	 */
-	public List<Sales> findSales(String condition) {
+	public List<Map<String, Object>> findSales(String condition) {
 	//	System.out.println(condition);
-		return salesDao.finaAll(condition);
+		List<Map<String, Object>> salesList =
+				new ArrayList<Map<String,Object>>();
+		for (Sales sales : salesDao.finaAll(condition)) {
+			Map<String, Object> salesMap = 
+					new HashMap<String, Object>();
+			salesMap.put("id", sales.getId());
+			salesMap.put("userName", sales.getUser().getName());
+			salesMap.put("medicine", sales.getMedicine());
+			salesMap.put("count", sales.getCount());
+			salesMap.put("datetime", sales.getDatetime());
+			salesMap.put("money", sales.getMoney());
+			salesList.add(salesMap);
+		}
+		
+		return salesList;
 	}
 	
 	/**
@@ -45,10 +60,25 @@ public class SalesService {
 	 * @param recordNum 记录数
 	 * @return 销售记录集合
 	 */
-	public List<Sales> findSalesByPaging(String condition,
+	public List<Map<String, Object>> findSalesByPaging(String condition,
 			int startIndex, int recordNum) {
-	//	System.out.println(condition);
-		return salesDao.findByPaging(condition, startIndex, recordNum);
+	//	System.out.println(condition);	
+		List<Map<String, Object>> salesList =
+				new ArrayList<Map<String,Object>>();
+		for (Sales sales : salesDao.findByPaging(
+				condition, startIndex, recordNum)) {
+			Map<String, Object> salesMap = 
+					new HashMap<String, Object>();
+			salesMap.put("id", sales.getId());
+			salesMap.put("userName", sales.getUser().getName());
+			salesMap.put("medicine", sales.getMedicine());
+			salesMap.put("count", sales.getCount());
+			salesMap.put("datetime", sales.getDatetime());
+			salesMap.put("money", sales.getMoney());
+			salesList.add(salesMap);
+		}
+		
+		return salesList;
 	}
 	
 	/**
@@ -56,11 +86,20 @@ public class SalesService {
 	 * @param id
 	 * @return 销售记录
 	 */
-	public Sales findOne(Integer id) {
+	public Map<String, Object> findOne(Integer id) {
 		if (id == null) 
 			return null;
-		else
-			return salesDao.findOne(id);
+
+		Sales sales = salesDao.findOne(id);
+		Map<String, Object> salesMap = 
+				new HashMap<String, Object>();
+		salesMap.put("id", sales.getId());
+		salesMap.put("userName", sales.getUser().getName());
+		salesMap.put("medicine", sales.getMedicine());
+		salesMap.put("count", sales.getCount());
+		salesMap.put("datetime", sales.getDatetime());
+		salesMap.put("money", sales.getMoney());
+		return salesMap;
 	}
 	
 	/**
@@ -79,9 +118,9 @@ public class SalesService {
 			
 			// 更新库存
 			if (sales.getMedicine() != null) {
-				inventoryService.updateQuantity(
-					sales.getMedicine().getId(),
-					sales.getCount(), 1);
+				inventoryDao.updateQuantity(
+						sales.getMedicine().getId(), 
+						-1 * sales.getCount());
 			}
 			salesDao.insert(sales);
 			
@@ -164,11 +203,10 @@ public class SalesService {
 	 * 获取月销售状况数据
 	 * @return
 	 */
-	public List getMonthDataSource() {
+	public List<Object> getMonthDataSource() {
 		List<Object> dataList = new ArrayList<Object>();
 		
 		for (String year : findYears()) {
-			int index = 0;
 			List<Float> monthData = findMonthSalesMoneyByYear(
 					Integer.valueOf(year));
 			dataList.add(monthData);
@@ -186,5 +224,25 @@ public class SalesService {
 		
 		// 数据项
 		return findYearSalesMoney();
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public List<List> getDataList() {
+		List<List> dataList = new ArrayList<List>();
+		List<Map<String, Object>> salesList = findSales(
+				"ORDER BY id DESC");
+		// 将销售集合装入数组集合中
+		for (Map<String, Object> sales : salesList) {
+			List<Object> singleData = new ArrayList<Object>();
+			singleData.add(sales.get("id"));
+			singleData.add(sales.get("userName"));
+			singleData.add(sales.get("medicine"));
+			singleData.add(sales.get("count"));
+			singleData.add(sales.get("datetime"));
+			singleData.add(sales.get("money"));
+			dataList.add(singleData);
+		}
+		
+		return dataList;
 	}
 }

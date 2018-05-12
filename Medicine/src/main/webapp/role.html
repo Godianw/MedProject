@@ -314,7 +314,7 @@
     	  table = $('#tbl_role').DataTable({
     		  // 国际化
     	     language: {
-    	    	url: "/med/common/language-zh-CN.txt",
+    	    	url: basePath + "/common/language-zh-CN.txt",
     		 },
     		 /* dom */
     		 dom: 'lrt<"pull-right"i>',	// 默认lfrtip
@@ -333,7 +333,7 @@
     		 serverSide: true,
     		 // 数据来源（包括处理分页，排序，过滤） ，即url，action，接口，等等
     		 ajax: {
-    			 url: '/med/role/data_source.do?pageNum=1',
+    			 url: basePath + '/role/data_source.do?pageNum=1',
     			 type: 'POST',
     			 // 降低columns[i][search][value]数组的维度
     			 data : function(data) {  
@@ -418,11 +418,11 @@
           });
   		  
   		  $.ajax({
-  			  url: '/med/role/get_privtree_data.do',
+  			  url: basePath + '/role/get_privtree_data.do',
   			  type: 'POST',
   			  async: false,
   			  success: function(result) {
-  				  console.log(result);
+  			//	  console.log(result);
   			  }
   		  });
   		  
@@ -430,13 +430,13 @@
   			  checkbox: true,
   			  selectMode: 3,
   			  source: {
-  				url: "/med/role/get_privtree_data.do",
+  				url: basePath + "/role/get_privtree_data.do",
   			    cache: false
   			  },
-  			init: function(event, data) {
+  			  init: function(event, data) {
   				// Set key from first part of title (just for this demo output)
   			/*	data.tree.visit(function(n) {
-					n.key = n.title.split(" ")[0];
+					var dataTitle = n.title.split(" ")[0];
 				});*/
   			},
   			select: function(event, data) {
@@ -505,7 +505,7 @@
       // 显示完整表格
       function role_refresh() {
     	  
-    	  var newUrl = '/med/role/data_source.do?pageNum=1';
+    	  var newUrl = basePath + '/role/data_source.do?pageNum=1';
     	  table.ajax.url(newUrl).load();
     	  
     	  document.getElementById("form_filter").reset(); 
@@ -524,7 +524,7 @@
     	  });
     	  
     	  $.ajax({
-    		 url : '/med/role/save_priv.do',
+    		 url : basePath + '/role/save_priv.do',
     		 type : 'POST',
     		 data : {
     			 "id" : $('#id_setting').val(),
@@ -532,7 +532,7 @@
     		 },
     		 success : function(result) {
     			 if (result.resultCode == 200) {
-     				 $(location).attr('href', '/med/role/info.do');
+     				 $(location).attr('href', basePath + '/role/info.do');
                   };
     		 },
     		 error : function() {
@@ -548,12 +548,12 @@
     	  
     	  $.ajax({
     		  type : "POST",
-     		  url : "/med/role/save.do",
+     		  url : basePath + "/role/save.do",
      		  data : $('#form_edit').serialize(),
      		  success : function(result) {
      		//	 console.log(result);//打印服务端返回的数据(调试用)
      			  if (result.resultCode == 200) {
-     				 $(location).attr('href', '/med/role/info.do');
+     				 $(location).attr('href', basePath + '/role/info.do');
                   };
      		  },
      		  error : function() {
@@ -570,12 +570,12 @@
     	  
     	  $.ajax({
      		 type : "POST",
-     		 url : "/med/role/save.do",
+     		 url : basePath + "/role/save.do",
      		 data : $('#form_add').serialize(),
      		 success : function(result) {
      		//	 console.log(result);//打印服务端返回的数据(调试用)
      			 if (result.resultCode == 200) {
-     				 $(location).attr('href', '/med/role/info.do');
+     				 $(location).attr('href', basePath + '/role/info.do');
                   };
      		 },
      		 error : function() {
@@ -598,7 +598,7 @@
     	  if (name != "" && name != null) {
     		  condition += " AND name LIKE '%25" + name + "%25'";
     	  }
-    	  var newUrl = '/med/role/data_source.do?pageNum=1&condition=' + condition;
+    	  var newUrl = basePath + '/role/data_source.do?pageNum=1&condition=' + condition;
     	  table.ajax.url(newUrl).load();
     	  
     	  $('#filter').modal('hide');
@@ -611,13 +611,17 @@
     	  // 获取后台数据
     	  $.ajax({
      		 type : "POST",
-     		 url : "/med/role/find_priv.do",
+     		 url : basePath + "/role/find_priv.do",
      		 data : {
      			 id : i 
      		 },
      		 success : function(privileges) {
      			var tree = $("#tree").fancytree("getTree");
  				tree.selectAll(false);
+ 				if ([[${@roleService.userHasPrivilege(session.user.id, '系统管理')}]]) {
+ 					var node2 = tree.findFirst('系统管理');
+ 					node2.setSelected();
+ 				}
      			$.each(privileges, function(index, privilege) {
      				var node1 = tree.findFirst(privilege.content);
      			//	console.log(node1);
@@ -636,7 +640,7 @@
     	  
     	  $.ajax({
     		  type : "POST",
-      		  url : "/med/role/find.do",
+      		  url : basePath + "/role/find.do",
       		  data : {
     			 id : i 
     		  },
@@ -660,14 +664,14 @@
       function role_delete() {
     	  $.ajax({
      		 type : "POST",
-     		 url : "/med/role/delete.do",
+     		 url : basePath + "/role/delete.do",
      		 data : {
      			id : curDelId 
      		 },
      		 success : function(result) {
      		//	 console.log(result);//打印服务端返回的数据(调试用)
      			 if (result.resultCode == 200) {
-     				 $(location).attr('href', '/med/role/info.do');
+     				 $(location).attr('href', basePath + '/role/info.do');
                   };
      		 },
      		 error : function() {
@@ -678,7 +682,7 @@
       
       function pageChange(pageNum) {
       	
-    	  var newUrl = '/med/role/data_source.do?pageNum=' + pageNum;
+    	  var newUrl = basePath + '/role/data_source.do?pageNum=' + pageNum;
     	  if (condition != null && condition != "")
     		  newUrl += "&condition = " + condition;
     	  table.ajax.url(newUrl).load(function(json){

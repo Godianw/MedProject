@@ -18,9 +18,7 @@
     *********************************************************************************************************************************************************** -->
     <!--sidebar start-->
     <aside th:replace="common/layout::sidebar"></aside>
-    <!--sidebar end-->
-
-
+    
     <!-- **********************************************************************************************************************************************************
       MAIN CONTENT
     *********************************************************************************************************************************************************** -->
@@ -45,6 +43,12 @@
                     data-target="#filter" class="mylink">
                     <i class="fa fa-filter fa-lg"></i> 筛选
                   </a>
+                  <a href="#" data-toggle="modal" id="btn_import"
+                    data-target="#import" class="mylink"
+                    th:if="${@roleService.userHasPrivilege(session.user.id, '导入药品EXCEL')}">
+                    <i class="fa fa-share-square-o fa-lg fa-rotate-90">
+                    </i> 导入
+                  </a>
                   <a href="#" data-toggle="modal"
                     data-target="#export" class="mylink"
                     th:if="${@roleService.userHasPrivilege(session.user.id, '导出药品PDF')}">
@@ -62,7 +66,7 @@
                     <th>药品名称</th>
                     <th>供应商</th>
                     <th>进价</th>
-                    <th>单价</th>
+                    <th>售价</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -137,14 +141,14 @@
 
           <table class="table table-bordered table-striped">
             <tr>
+              <td>单位</td>
               <td>进价</td>
-              <td>单价</td>
-              <td>库存数量</td>
+              <td>售价</td>
             </tr>
             <tr>
+              <td id="unit_detail"></td>
               <td id="purchasePrice_detail"></td>
               <td id="singlePrice_detail"></td>
-              <td id="quantity_detail"></td>
             </tr>
           </table>
         </div>
@@ -232,6 +236,17 @@
                 </div>
               </div>
               
+              <!-- 单位 -->
+              <div class="form-group" style="padding-bottom:0px;">
+                <label class="col-sm-2 col-sm-2 control-label">
+                <b style="color:red;">* </b>单位</label>
+                <div class="col-sm-10">
+                  <input type="text" class="myform-control"
+                    id="unit_edit" name="unitPrice"
+                    placeholder="单位">
+                </div>
+              </div>
+              
               <!-- 进价 -->
               <div class="form-group" style="padding-bottom:0px;">
                 <label class="col-sm-2 col-sm-2 control-label">
@@ -243,14 +258,14 @@
                 </div>
               </div>
               
-              <!-- 单价 -->
+              <!-- 售价 -->
               <div class="form-group" style="padding-bottom:0px;">
                 <label class="col-sm-2 col-sm-2 control-label">
-                <b style="color:red;">* </b>单价</label>
+                <b style="color:red;">* </b>售价</label>
                 <div class="col-sm-10">
                                             ￥<input type="text" class="myform-control"
                     id="single_price_edit" name="singlePrice"
-                    placeholder="单价">
+                    placeholder="售价">
                 </div>
               </div>
                
@@ -335,6 +350,17 @@
                 </div>
               </div>
               
+              <!-- 单位 -->
+              <div class="form-group" style="padding-bottom:0px;">
+                <label class="col-sm-2 col-sm-2 control-label">
+                <b style="color:red;">* </b>单位</label>
+                <div class="col-sm-10">
+                  <input type="text" class="myform-control"
+                    placeholder="单位" name="unit"
+                    id="unit_add"/>
+                </div>
+              </div>
+              
               <!-- 进价 -->
               <div class="form-group" style="padding-bottom:0px;">
                 <label class="col-sm-2 col-sm-2 control-label">
@@ -346,13 +372,13 @@
                 </div>
               </div>
               
-              <!-- 单价 -->
+              <!-- 售价 -->
               <div class="form-group" style="padding-bottom:0px;">
                 <label class="col-sm-2 col-sm-2 control-label">
-                <b style="color:red;">* </b>单价</label>
+                <b style="color:red;">* </b>售价</label>
                 <div class="col-sm-10">
                                             ￥<input type="text" class="myform-control"
-                    placeholder="单价" name="singlePrice"
+                    placeholder="售价" name="singlePrice"
                     id="single_price_add"/>
                 </div>
               </div>       
@@ -457,6 +483,50 @@
     </div>
   </div>
   
+  <!-- Import Modal -->
+  <div class="modal fade" id="import" tabindex="-1" role="dialog"
+    aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"
+            aria-hidden="true">&times;</button>
+          <h4 class="modal-title" id="myModalLabel">选择</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-panel">
+            <form class="form-horizontal style-form" id="form_import">
+                <!-- 下载模板 -->
+                <label class="col-sm-2"> </label>
+                
+                <label class="col-sm-3 control-label mylabel"> 
+                  <input type="button" name="importOptions" 
+                  id="dl_excel" value="下载导入模板" class="layui-btn"
+                  onclick="download()">
+                </label>
+                
+                <label class="col-sm-2"> </label>
+                
+                <label class="col-sm-3 control-label mylabel"> 
+                  <input type="button" name="importOptions" 
+                    id="im_excel" value="从excel导入" class="layui-btn">
+                </label>
+                         
+                <!-- tip -->
+                <div class="form-group">
+                  <div class="col-sm-12" style="padding-top:4px;">
+                    <label class="form-control-static"
+                      style="color: red;">提示：导入前请先下载模板填充数据，然后使用模板导入
+                    </label>
+                  </div>
+                </div>
+              
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- Export Modal -->
   <div class="modal fade" id="export" tabindex="-1" role="dialog"
     aria-labelledby="myModalLabel" aria-hidden="true">
@@ -541,7 +611,7 @@
     	  table = $('#tbl_medicine').DataTable({
     		  // 国际化
     	     language: {
-    	    	url: "/med/common/language-zh-CN.txt",
+    	    	url: basePath + "/common/language-zh-CN.txt",
     		 },
     		 /* dom */
     		 dom: 'lrt<"pull-right"i>',	// 默认lfrtip
@@ -560,7 +630,7 @@
     		 serverSide: true,
     		 // 数据来源（包括处理分页，排序，过滤） ，即url，action，接口，等等
     		 ajax: {
-    			 url: '/med/medicine/data_source.do?pageNum=1',
+    			 url: basePath + '/medicine/data_source.do?pageNum=1',
     			 type: 'POST',
     			 // 降低columns[i][search][value]数组的维度
     			 data : function(data) {  
@@ -701,17 +771,20 @@
     	  $('#batch_num_add').validate("生产批号");
     	  $('#mydatepicker2').validate("生产日期");
     	  $('#storage_time_add').validate("保质期");
+    	  $('#unit_add').validate("进价");
     	  $('#purchase_price_add').validate("进价");
-    	  $('#single_price_add').validate("单价");
+    	  $('#single_price_add').validate("售价");
     	  
     	  $.ajax({
     		 type : "POST",
-    		 url : "/med/medicine/save.do",
+    		 url : basePath + "/medicine/save.do",
     		 data : $('#form_add').serialize(),
     		 success : function(result) {
     		//	 console.log(result);//打印服务端返回的数据(调试用)
     			 if (result.resultCode == 200) {
-    				 $(location).attr('href', '/med/medicine/info.do');
+    				 layer.msg("添加成功");
+    				 $(location).attr('href', 
+    						 basePath + '/medicine/info.do');
                  };
     		 },
     		 error : function() {
@@ -743,7 +816,7 @@
     		  condition += " AND batch_num = '" + batch_num + "'"; 
     	  }
     	  
-    	  var newUrl = '/med/medicine/data_source.do?pageNum=1&condition=' + condition;
+    	  var newUrl = basePath + '/medicine/data_source.do?pageNum=1&condition=' + condition;
     	  table.ajax.url(newUrl).load();
     	  
     	  $('#filter').modal('hide');
@@ -755,7 +828,7 @@
     	// 获取后台数据
     	  $.ajax({
      		 type : "POST",
-     		 url : "/med/medicine/find.do",
+     		 url : basePath + "/medicine/find.do",
      		 data : {
      			 id : i 
      		 },
@@ -767,9 +840,9 @@
      			$('#batchNum_detail').text(result.batchNum);
      			$('#productDate_detail').text(result.productDate);
      			$('#storageTime_detail').text(result.storageTime);
+     			$('#unit_detail').text(result.unit);
      			$('#purchasePrice_detail').text(money(result.purchasePrice));
      			$('#singlePrice_detail').text(money(result.singlePrice));
-     			$('#quantity_detail').text(result.quantity);
      			
      		 },
      		 error : function() {
@@ -784,7 +857,7 @@
     	  
     	  $.ajax({
     		  type : "POST",
-    		  url : "/med/supplier/find_name.do",
+    		  url : basePath + "/supplier/find_name.do",
     		  async : false,
     		  success : function(result) {
     			  var data = result.data;
@@ -808,7 +881,7 @@
     	  // 获取后台数据
     	  $.ajax({
      		 type : "POST",
-     		 url : "/med/medicine/find.do",
+     		 url : basePath + "/medicine/find.do",
      		 data : {
      			 id : i 
      		 },
@@ -820,6 +893,7 @@
      			$('#batch_num_edit').val(result.batchNum);
      			$('#mydatepicker').val(result.productDate);
      			$('#storage_time_edit').val(result.storageTime);
+     			$('#unit_edit').val(result.unit);
      			$('#purchase_price_edit').val(result.purchasePrice);
      			$('#single_price_edit').val(result.singlePrice);
      		 },
@@ -838,17 +912,19 @@
     	  $('#batch_num_edit').validate("生产批号");
     	  $('#mydatepicker').validate("生产日期");
     	  $('#storage_time_edit').validate("保质期");
+    	  $('#unit_edit').validate("单位");
     	  $('#purchase_price_edit').validate("进价");
-    	  $('#single_price_edit').validate("单价");
+    	  $('#single_price_edit').validate("售价");
     	  
     	  $.ajax({
     		 type : "POST",
-    		 url : "/med/medicine/save.do",
+    		 url : basePath + "/medicine/save.do",
     		 data : $('#form_edit').serialize(),
     		 success : function(result) {
     		//	 console.log(result);//打印服务端返回的数据(调试用)
     			 if (result.resultCode == 200) {
-    				 $(location).attr('href', '/med/medicine/info.do');
+    				 layer.msg("修改成功");
+    				 $(location).attr('href', basePath + '/medicine/info.do');
                  };
     		 },
     		 error : function() {
@@ -860,7 +936,7 @@
       // 显示全部数据
       function medicine_refresh() {
     	  
-    	  var newUrl = '/med/medicine/data_source.do?pageNum=1';
+    	  var newUrl = basePath + '/medicine/data_source.do?pageNum=1';
     	  table.ajax.url(newUrl).load();
     	  
     	  document.getElementById("form_filter").reset(); 
@@ -875,14 +951,16 @@
       function medicine_delete() {
     	  $.ajax({
      		 type : "POST",
-     		 url : "/med/medicine/delete.do",
+     		 url : basePath + "/medicine/delete.do",
      		 data : {
      			id : curDelId 
      		 },
      		 success : function(result) {
      		//	 console.log(result);//打印服务端返回的数据(调试用)
      			 if (result.resultCode == 200) {
-     				 $(location).attr('href', '/med/medicine/info.do');
+     				 layer.msg("保存成功");
+     				 $(location).attr('href', 
+     						 basePath + '/medicine/info.do');
                   };
      		 },
      		 error : function() {
@@ -893,7 +971,7 @@
 
       function pageChange(pageNum) {
     	
-    	  var newUrl = '/med/medicine/data_source.do?pageNum=' + pageNum;
+    	  var newUrl = basePath + '/medicine/data_source.do?pageNum=' + pageNum;
     	  if (condition != null && condition != "")
     		  newUrl += "&condition = " + condition;
     	  table.ajax.url(newUrl).load(function(json){
@@ -911,15 +989,60 @@
       function exportToFile() {
     	  var val = $('input:radio[name="exportOptions"]:checked').val();
     	  if (val == "pdf")
-    		window.location.href = "/med/medicine/toPdf.do?fileName=药品信息";
+    		window.location.href = basePath 
+    			+ "/medicine/toPdf.do?fileName=药品信息";
     	  if (val == "excel1")
-        	window.location.href = "/med/medicine/toExcel.do?fileName=药品信息&suffix=xls";
+        	window.location.href = basePath 
+        		+ "/medicine/toExcel.do?fileName=药品信息&suffix=xls";
     	  if (val == "excel2")
-    	  	window.location.href = "/med/medicine/toExcel.do?fileName=药品信息&suffix=xlsx";
+    	  	window.location.href = basePath 
+    	  		+ "/medicine/toExcel.do?fileName=药品信息&suffix=xlsx";
     	  
     	  // 隐藏模态框 
     	  $('#export').modal('toggle');
       }
+      
+      // 下载模板
+      function download() {
+    	  
+    	  $(location).attr('href', basePath + '/medicine/downloadTemplate.do');
+      }
+      
+      // 文件上传组件
+      layui.use('upload', function(){
+    	  var upload = layui.upload; //得到 upload 对象
+    	  
+    	  //创建一个上传组件
+    	  upload.render({
+    	  	  elem: '#im_excel',
+    	  	  url: basePath + '/medicine/import.do',
+    	  	  method: 'POST',
+    	  	  // 允许上传的文件类型为所有文件
+    	  	  accept: 'file',
+    	  	  // 规定打开文件选择框时，筛选出的文件类型
+    	  	  acceptMime: 'application/vnd.ms-excel',
+    	  	  // 允许上传的文件后缀
+    	  	  exts: 'xls|xlsx',
+    	  	  title: '请选择MS Excel文件',
+    	  	  // 选完文件后自动上传
+    	  	  auto: true,
+    	  	  done: function(res, index, upload){ //上传后的回调
+    	  	  	  if (res.code == 200) {
+    	  	  		  layer.msg("导入成功");
+    	  	  		  $(location).attr('href', 
+    	  	  			basePath + '/medicine/info.do');
+    	  	  	  } else {
+    	  	  		  layer.msg(res.message);
+    	  	  	  }
+    	  	  },
+    	  	  error: function(index, upload) {
+    	  		  layer.msg('服务器异常，导入失败');
+    	  	  }
+    	  	  //,accept: 'file' //允许上传的文件类型
+    	  	  //,size: 50 //最大允许上传的文件大小
+    	  	  //,……
+    	  });
+      });
 
   </script>
 </body>

@@ -11,6 +11,8 @@ import java.util.List;
 
 
 
+
+
 import javax.transaction.Transactional;
 
 import org.hibernate.query.Query;
@@ -100,5 +102,25 @@ public class InventoryHistoryService {
 		}
 		
 		return list;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	public List<List> getDataList() {
+		List<List> dataList = new ArrayList<List>();
+		List<InventoryHistory> inventoryHistoriesList = 
+				findInventoryHistories("ORDER BY id DESC");
+		// 将操作历史记录装入集合数组中
+		for (InventoryHistory inventoryHistory : inventoryHistoriesList) {
+			List<Object> singleData = new ArrayList<Object>();
+			singleData.add(inventoryHistory.getId());
+			singleData.add(inventoryHistory.getMedName());
+			singleData.add(inventoryHistory.getQuantity());
+			singleData.add(inventoryHistory.getTime());
+			singleData.add(
+					(inventoryHistory.getOptype() ? "出库" : "入库"));
+			dataList.add(singleData);
+		}
+		
+		return dataList;
 	}
 }

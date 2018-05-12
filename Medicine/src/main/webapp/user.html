@@ -122,7 +122,7 @@
                 <div class="col-sm-10">
                   <input type="text" class="form-control"
                     placeholder="登录名" name="username" 
-                    id="username_edit">
+                    id="username_edit" readonly="readonly">
                 </div>
               </div>
               
@@ -133,7 +133,8 @@
                    <b style="color:red;">* </b>用户名</label>
                 <div class="col-sm-10">
                   <input type="text" class="form-control"
-                    placeholder="用户名" name="name" id="name_edit">
+                    placeholder="用户名" name="name" id="name_edit"
+                    readonly="readonly">
                 </div>
               </div>
               
@@ -143,7 +144,8 @@
                    style="font-size:12px;">联系电话</label>
                 <div class="col-sm-10">
                   <input type="text" class="form-control"
-                    placeholder="联系电话" name="phone" id="phone_edit">
+                    placeholder="联系电话" name="phone" id="phone_edit"
+                    readonly="readonly">
                 </div>
               </div>
               
@@ -410,7 +412,7 @@
     	  table = $('#tbl_user').DataTable({
     		  // 国际化
     	     language: {
-    	    	url: "/med/common/language-zh-CN.txt",
+    	    	url: basePath + "/common/language-zh-CN.txt",
     		 },
     		 /* dom */
     		 dom: 'lrt<"pull-right"i>',	// 默认lfrtip
@@ -429,7 +431,7 @@
     		 serverSide: true,
     		 // 数据来源（包括处理分页，排序，过滤） ，即url，action，接口，等等
     		 ajax: {
-    			 url: '/med/user/data_source.do?pageNum=1',
+    			 url: basePath + '/user/data_source.do?pageNum=1',
     			 type: 'POST',
     			 // 降低columns[i][search][value]数组的维度
     			 data : function(data) {  
@@ -463,6 +465,9 @@
             	 	render : function(data, type, row) {
             	 		var id = row.id;
             	 		var html = '';
+            	 		
+            	 		if (row.roles.indexOf("管理员") != -1)
+            	 			return '';
             	 		
             	 		if ([[${@roleService.userHasPrivilege(session.user.id, '添加用户、修改用户信息')}]]) {
             	 			html += '<button class="btn btn-primary btn-xs" '
@@ -535,7 +540,7 @@
     	  var html = "";
     	  
     	  $.ajax({
-    		  url : '/med/role/find_name.do',
+    		  url : basePath + '/role/find_name.do',
     		  type : 'POST',
     		  async : false,
     		  success : function(result) {
@@ -553,7 +558,7 @@
       // 显示全部
       function user_refresh() {
     	  
-    	  var newUrl = '/med/user/data_source.do?pageNum=1';
+    	  var newUrl = basePath + '/user/data_source.do?pageNum=1';
     	  table.ajax.url(newUrl).load();
     	  
     	  document.getElementById("form_filter").reset(); 
@@ -577,14 +582,14 @@
     	  user.state = $('#state_edit').val();
     	  
     	  $.ajax({
-    		 url : '/med/user/save.do',
+    		 url : basePath + '/user/save.do',
     		 type : 'POST',
     		 data : {
     			 userMap : JSON.stringify(user) 
     		 },
     		 success : function(result) {
     			 if (result.resultCode == 200) {
-    				 $(location).attr('href', '/med/user/info.do');
+    				 $(location).attr('href', basePath + '/user/info.do');
                  };
     		 }, 
     		 error : function() {
@@ -610,14 +615,14 @@
     	  user.state = $('#state_add').val();
     	  
     	  $.ajax({
-     		 url : '/med/user/save.do',
+     		 url : basePath + '/user/save.do',
      		 type : 'POST',
      		 data : {
      			userMap : JSON.stringify(user)  
      		 },
      		 success : function(result) {
      			 if (result.resultCode == 200) {
-     				 $(location).attr('href', '/med/user/info.do');
+     				 $(location).attr('href', basePath + '/user/info.do');
                   };
      		 }, 
      		 error : function() {
@@ -649,7 +654,7 @@
     		  condition += " AND state = " + state; 
     	  }
     	  
-    	  var newUrl = '/med/user/data_source.do?pageNum=1&condition=' + condition;
+    	  var newUrl = basePath + '/user/data_source.do?pageNum=1&condition=' + condition;
     	  table.ajax.url(newUrl).load();
     	  
     	  $('#filter').modal('hide');
@@ -659,7 +664,7 @@
       function user_find(i) {
     	  
     	  $.ajax({
-    		 url : '/med/user/find.do',
+    		 url : basePath + '/user/find.do',
     		 type : 'POST',
     		 data : {
     			 id : i
@@ -690,14 +695,14 @@
       function user_delete() {
     	  $.ajax({
      		 type : "POST",
-     		 url : "/med/user/delete.do",
+     		 url : basePath + "/user/delete.do",
      		 data : {
      			id : curDelId 
      		 },
      		 success : function(result) {
      		//	 console.log(result);//打印服务端返回的数据(调试用)
      			 if (result.resultCode == 200) {
-     				 $(location).attr('href', '/med/user/info.do');
+     				 $(location).attr('href', basePath + '/user/info.do');
                   };
      		 },
      		 error : function() {
@@ -710,13 +715,14 @@
       function getAllRole() {  	  
     	  var html = ""; 	  
           $.ajax({
-    		  url : '/med/role/find_name.do',
+    		  url : basePath + '/role/find_name.do',
     		  type : 'POST',
     		  async : false,
     		  success : function(result) {
     			  var data = result.data;
     			  $.each(data, function(index, role) {
-    				 html += '<div class="checkbox"><label>'
+    				  if (role.name != '管理员')
+    				 	html += '<div class="checkbox"><label>'
     				 	+ '<input type="checkbox" value="'
     				 	+ role.name + '" name="role_choose"> '
     				 	+ role.name + '</label></div>';

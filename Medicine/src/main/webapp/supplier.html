@@ -448,7 +448,7 @@
     	  table = $('#tbl_supplier').DataTable({
     		  // 国际化
     	     language: {
-    	    	url: "/med/common/language-zh-CN.txt",
+    	    	url: basePath + "/common/language-zh-CN.txt",
     		 },
     		 /* dom */
     		 dom: 'lrt<"pull-right"i>',	// 默认lfrtip
@@ -467,7 +467,7 @@
     		 serverSide: true,
     		 // 数据来源（包括处理分页，排序，过滤） ，即url，action，接口，等等
     		 ajax: {
-    			 url: '/med/supplier/data_source.do?pageNum=1',
+    			 url: basePath + '/supplier/data_source.do?pageNum=1',
     			 type: 'POST',
     			 // 降低columns[i][search][value]数组的维度
     			 data : function(data) {  
@@ -572,12 +572,12 @@
     	  
     	  $.ajax({
     		 type : "POST",
-    		 url : "/med/supplier/save.do",
+    		 url : basePath + "/supplier/save.do",
     		 data : $('#form_add').serialize(),
     		 success : function(result) {
     		//	 console.log(result);//打印服务端返回的数据(调试用)
     			 if (result.resultCode == 200) {
-    				 $(location).attr('href', '/med/supplier/info.do');
+    				 $(location).attr('href', basePath + '/supplier/info.do');
                  };
     		 },
     		 error : function() {
@@ -608,7 +608,7 @@
     	  }
     	  
     //	  console.log("condition = " + condition);
-    	  var newUrl = '/med/supplier/data_source.do?pageNum=1&condition=' + condition;
+    	  var newUrl = basePath + '/supplier/data_source.do?pageNum=1&condition=' + condition;
     	  table.ajax.url(newUrl).load();
     	  
     	  $('#filter').modal('hide');
@@ -618,7 +618,7 @@
       function supplier_find(i) {
     	  $.ajax({
      		 type : "POST",
-     		 url : "/med/supplier/find.do",
+     		 url : basePath + "/supplier/find.do",
      		 data : {
      			 id : i 
      		 },
@@ -652,12 +652,12 @@
     	  $('#city_edit').validate("联系电话");
     	  $.ajax({
     		 type : "POST",
-    		 url : "/med/supplier/save.do",
+    		 url : basePath + "/supplier/save.do",
     		 data : $('#form_edit').serialize(),
     		 success : function(result) {
     		//	 console.log(result);//打印服务端返回的数据(调试用)
     			 if (result.resultCode == 200) {
-    				 $(location).attr('href', '/med/supplier/info.do');
+    				 $(location).attr('href', basePath + '/supplier/info.do');
                  };
     		 },
     		 error : function() {
@@ -669,7 +669,7 @@
       // 显示全部数据
       function supplier_refresh() {
     	  
-    	  var newUrl = '/med/supplier/data_source.do?pageNum=1';
+    	  var newUrl = basePath + '/supplier/data_source.do?pageNum=1';
     	  table.ajax.url(newUrl).load();
     	  
     	  document.getElementById("form_filter").reset(); 
@@ -684,14 +684,14 @@
       function supplier_delete() {
     	  $.ajax({
      		 type : "POST",
-     		 url : "/med/supplier/delete.do",
+     		 url : basePath + "/supplier/delete.do",
      		 data : {
      			id : curDelId 
      		 },
      		 success : function(result) {
      		//	 console.log(result);//打印服务端返回的数据(调试用)
      			 if (result.resultCode == 200) {
-     				 $(location).attr('href', '/med/supplier/info.do');
+     				 $(location).attr('href', basePath + '/supplier/info.do');
                   };
      		 },
      		 error : function() {
@@ -703,7 +703,7 @@
       // 变换表格数据
       function pageChange(pageNum) {
     	
-    	  var newUrl = '/med/supplier/data_source.do?pageNum=' + pageNum;
+    	  var newUrl = basePath + '/supplier/data_source.do?pageNum=' + pageNum;
     	  if (condition != null && condition != "")
     		  newUrl += "&condition = " + condition;
     	  table.ajax.url(newUrl).load(function(json){
@@ -722,11 +722,11 @@
       function exportToFile() {
     	  var val = $('input:radio[name="exportOptions"]:checked').val();
     	  if (val == "pdf")
-    		window.location.href = "/med/supplier/toPdf.do?fileName=供应商";
+    		window.location.href = basePath + "/supplier/toPdf.do?fileName=供应商";
     	  if (val == "excel1")
-        	window.location.href = "/med/supplier/toExcel.do?fileName=供应商&suffix=xls";
+        	window.location.href = basePath + "/supplier/toExcel.do?fileName=供应商&suffix=xls";
     	  if (val == "excel2")
-    	  	window.location.href = "/med/supplier/toExcel.do?fileName=供应商&suffix=xlsx";
+    	  	window.location.href = basePath + "/supplier/toExcel.do?fileName=供应商&suffix=xlsx";
     	  
     	  // 隐藏模态框 
     	  $('#export').modal('toggle');

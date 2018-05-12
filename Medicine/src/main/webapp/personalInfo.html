@@ -134,13 +134,13 @@
   	  	}
   	  	
   	  	$.ajax({
-  	  		url: '/med/user/saveInfo.do',
+  	  		url: basePath + '/user/saveInfo.do',
   	  		type: 'POST',
   	  		data: $('#form_info').serialize(),
   	  		success: function(result) {
   	  			if (result.resultCode == 200) {
   	  			   layer.msg("保存成功");
-				   $(location).attr('href', '/med/personalInfo.do');
+				   $(location).attr('href', basePath + '/personalInfo.do');
              	};
   	  		},
   	  		error: function() {

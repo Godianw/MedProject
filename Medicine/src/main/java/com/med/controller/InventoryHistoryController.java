@@ -49,12 +49,15 @@ public class InventoryHistoryController {
 			@ModelAttribute DTRequestParam dtParams, 
 			HttpServletRequest request) {
 		
-		List list = inventoryHistoryService.findInventoryHistoriesByPaging(
+		int recordsTotal = inventoryHistoryService
+				.findInventoryHistories(dtParams.getConditionSql())
+				.size();
+		int curIndex = dtParams.getCurPageStartIndex();
+		List list = inventoryHistoryService
+				.findInventoryHistoriesByPaging(
 				dtParams.getConditionSql(),
-				dtParams.getCurPageStartIndex(),
+				(curIndex >= recordsTotal ? 0 : curIndex),
 				dtParams.getLength());
-		int recordsTotal = inventoryHistoryService.findInventoryHistories(
-				dtParams.getConditionSql()).size();
 		int pageTotal = DataEncapUtil.getPageTotal(
 				recordsTotal, dtParams.getLength());
 		
@@ -88,25 +91,11 @@ public class InventoryHistoryController {
 		// 填充数据
 		String[] columnName = new String[] {
 				"编号", "药品名称", "数量", "操作日期", "操作类型" };
-		List<List> dataList = new ArrayList<List>();
-		List<InventoryHistory> inventoryHistoriesList = 
-				inventoryHistoryService.findInventoryHistories("ORDER BY id DESC");
-		// 将操作历史记录装入集合数组中
-		for (InventoryHistory inventoryHistory : inventoryHistoriesList) {
-			List<Object> singleData = new ArrayList<Object>();
-			singleData.add(inventoryHistory.getId());
-			singleData.add(inventoryHistory.getMedName());
-			singleData.add(inventoryHistory.getQuantity());
-			singleData.add(inventoryHistory.getTime());
-			singleData.add(
-					(inventoryHistory.getOptype() ? "出库" : "入库"));
-			dataList.add(singleData);
-		}
+		List<List> dataList = inventoryHistoryService.getDataList();
 		
 		// 将数据封装成pdf并写入response中
-		PdfUtil pdfUtil = new PdfUtil(fileName, "库存操作历史记录表", 
-				columnName, dataList);
-		pdfUtil.writeOutPdf(out);
+		new PdfUtil().writeOutPdf("库存操作历史记录表", 
+				columnName, dataList, out);
 
 		if (out != null) {
 			out.close();
@@ -137,27 +126,14 @@ public class InventoryHistoryController {
 		// 填充数据
 		String[] columnName = new String[] { 
 				"编号", "药品名称", "数量", "操作日期", "操作类型" };
-		List<List> dataList = new ArrayList<List>();
-		List<InventoryHistory> inventoryHistoriesList = inventoryHistoryService
-				.findInventoryHistories("ORDER BY id DESC");
-		// 将操作历史记录装入集合数组中
-		for (InventoryHistory inventoryHistory : inventoryHistoriesList) {
-			List<Object> singleData = new ArrayList<Object>();
-			singleData.add(inventoryHistory.getId());
-			singleData.add(inventoryHistory.getMedName());
-			singleData.add(inventoryHistory.getQuantity());
-			singleData.add(inventoryHistory.getTime());
-			singleData.add((inventoryHistory.getOptype() ? "出库" : "入库"));
-			dataList.add(singleData);
-		}
+		List<List> dataList = inventoryHistoryService.getDataList();
 		
 		ExcelSuffix excelSuffix = ExcelSuffix.XLS;
 		if (suffix.equals("xlsx"))
 			excelSuffix = ExcelSuffix.XLSX;
 		// 将数据封装成excel并写入response中
-		ExcelUtil excelUtil = new ExcelUtil(fileName, "库存操作历史记录表", 
-				columnName, dataList, excelSuffix);
-		excelUtil.writeOutExcel(out);
+		new ExcelUtil().writeOutExcel("库存操作历史记录表", 
+				columnName, dataList, excelSuffix, out);
 
 		if (out != null) {
 			out.close();

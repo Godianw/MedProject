@@ -35,7 +35,7 @@ public class RoleDao extends BaseDao {
 		return currentSession().createQuery("FROM Role "
 				+ (condition == null ? "" : condition))
 				.setFirstResult(startIndex)
-				.setMaxResults(startIndex + recordNum).list();
+				.setMaxResults(recordNum).list();
 	}
 	
 	/**

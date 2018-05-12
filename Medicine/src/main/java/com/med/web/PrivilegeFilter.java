@@ -58,7 +58,7 @@ public class PrivilegeFilter implements Filter {
 				"logout.do", "index.do", "data_source.do", 
 				"find_quantity.do", "find_name.do", 
 				"get_privtree_data.do", "personalInfo.do",
-				"saveInfo.do"};
+				"saveInfo.do", "downloadTemplate.do"};
 		
 		String[] doFilterUrl = {"/inventory/", "/inventoryCount/",
 				"/inventory_history/", "/medicine/", "/role/",
@@ -91,7 +91,7 @@ public class PrivilegeFilter implements Filter {
 			User user = (User) session.getAttribute("user");
 			Set<Role> roles = user.getRoles();
 			if (!roles.isEmpty()) {
-				Iterator iterator = roles.iterator();
+				Iterator<Role> iterator = roles.iterator();
 				while (iterator.hasNext()) {
 					Role role = (Role) iterator.next();
 					List<Map<String, Object>> list 

@@ -53,7 +53,7 @@ public class SalesDao extends BaseDao {
 		// 取出session中的对象进行更新
 		Sales tmp = findOne(sales.getId());
 		
-		tmp.setUserName(sales.getUserName());
+		tmp.setUser(sales.getUser());
 		tmp.setMedicine(sales.getMedicine());
 		tmp.setCount(sales.getCount());
 		tmp.setDatetime(sales.getDatetime());
@@ -85,7 +85,7 @@ public class SalesDao extends BaseDao {
 		return currentSession().createQuery("FROM Sales " + 
 				(condition == null ? "" : condition))
 				.setFirstResult(startIndex)
-				.setMaxResults(startIndex + recordNum).list();
+				.setMaxResults(recordNum).list();
 	}
 	
 	/**

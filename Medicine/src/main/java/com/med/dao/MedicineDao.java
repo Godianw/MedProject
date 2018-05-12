@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.med.entity.Medicine;
+import com.med.exception.DataInvalidException;
 
 /**
  * 药品Dao类
@@ -96,6 +97,27 @@ public class MedicineDao extends BaseDao {
 		return currentSession().createQuery("FROM Medicine " + 
 				(condition == null ? "" : condition))
 				.setFirstResult(startIndex)
-				.setMaxResults(startIndex + recordNum).list();
+				.setMaxResults(recordNum).list();
+	}
+	
+	/**
+	 * 批量添加药品
+	 * @param medicines
+	 */
+	public void insertMedicines(List<Medicine> medicines) {
+		if (medicines != null && medicines.size() != 0) {
+			int i = 1;
+			try {
+				for (Medicine medicine : medicines) {
+					currentSession().save(medicine);
+					++ i;
+				}
+			}
+			catch (Exception e) {
+				throw new DataInvalidException(
+						new StringBuilder("第").append(i)
+						.append("行有错误数据").toString());
+			}
+		}
 	}
 }

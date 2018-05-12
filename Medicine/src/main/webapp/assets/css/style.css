@@ -1927,6 +1927,7 @@ label {
 	background: #fff;
 	border-radius: 5px;
 	-webkit-border-radius: 5px;
+	margin-top: 50px;
 }
 
 .form-login h2.form-login-heading {

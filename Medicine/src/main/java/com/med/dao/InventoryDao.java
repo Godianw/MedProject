@@ -20,7 +20,7 @@ public class InventoryDao extends BaseDao {
 	public List findInventorys(String condition) {
 		
 		return currentSession().createQuery(
-				"SELECT id,name,quantity,warningQuantity FROM Medicine "
+				"SELECT id,name,quantity,warningQuantity,unit FROM Medicine "
 				+ (condition == null ? "" : condition))
 				.list();
 	}
@@ -36,10 +36,10 @@ public class InventoryDao extends BaseDao {
 	public List findInventorys(String condition, 
 			int startIndex, int recordNum) {
 		return currentSession().createQuery(
-				"SELECT id,name,quantity,warningQuantity FROM Medicine "
+				"SELECT id,name,quantity,warningQuantity,unit FROM Medicine "
 				+ (condition == null ? "" : condition))
 				.setFirstResult(startIndex)
-				.setMaxResults(startIndex + recordNum).list();
+				.setMaxResults(recordNum).list();
 	}
 	
 	/**
@@ -49,7 +49,7 @@ public class InventoryDao extends BaseDao {
 	 */
 	public Map<String, Object> findOne(int id) {
 		Object[] obj = (Object[]) currentSession().createQuery(
-				"SELECT id,name,quantity,warningQuantity FROM Medicine WHERE id = :id")
+				"SELECT id,name,quantity,warningQuantity,unit FROM Medicine WHERE id = :id")
 				.setParameter("id", id).uniqueResult();
 		
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -57,6 +57,7 @@ public class InventoryDao extends BaseDao {
 		map.put("name", obj[1]);
 		map.put("quantity", obj[2]);
 		map.put("warningQuantity", obj[3]);
+		map.put("unit", obj[4]);
 		
 		return map;
 	}

@@ -118,7 +118,7 @@
                 </div>
               </div>  -->
               
-              <input type="hidden" name="userName" id="user_add">
+              <input type="hidden" name="user.id" id="user_add">
               
               <!-- 药品 -->
               <div class="form-group" style="padding-bottom:0px;">
@@ -150,6 +150,7 @@
                 <div class="col-sm-10">
                   <input type="text" class="myform-control" 
                   placeholder="销售数量" id="count_add" name="count">
+                  <label id="unit_add"></label>
                 </div>
               </div>
               
@@ -273,7 +274,7 @@
     	  table = $('#tbl_sales').DataTable({
     		// 国际化
      	     language: {
-     	    	url: "/med/common/language-zh-CN.txt",
+     	    	url: basePath + "/common/language-zh-CN.txt",
      		 },
      		 /* dom */
      		 dom: 'lrt<"pull-right"i>',	// 默认lfrtip
@@ -292,7 +293,7 @@
      		 serverSide: true,
      		 // 数据来源（包括处理分页，排序，过滤） ，即url，action，接口，等等
      		 ajax: {
-     			 url: '/med/sales/data_source.do?pageNum=1',
+     			 url: basePath + '/sales/data_source.do?pageNum=1',
      			 type: 'POST',
      			 // 降低columns[i][search][value]数组的维度
      			 data : function(data) {  
@@ -425,6 +426,7 @@
       $('#med_add').change(function(){
     	  var medId = $('#med_add').val();
     	  if (medId == null || medId == "") {
+    		  $('#unit_add').html('');
     		  $('#div_count').hide();
     		  return ;
     	  }
@@ -433,12 +435,15 @@
     	  
     	  $.ajax({
     		  type : "POST",
-    		  url : "/med/inventory/find_quantity.do",
+    		  url : basePath + "/inventory/find_quantity.do",
     		  data : {
     			  id : medId
     		  },
     		  success : function(quantity) {
     			  $('#curquantity_add').html(quantity);
+    			  $('#unit_add').html(
+    					quantity.substring(
+    						quantity.length - 1, quantity.length));
     		  },
     		  error : function() {
     			  console.log("服务器异常，药品库存获取失败");
@@ -470,24 +475,24 @@
     	  
     	  var salesquantity = $('#count_add').val();
     	  var curquantity = $('#curquantity_add').text();
+    	  curquantity = curquantity.substring(0, curquantity.length - 1);
     	  
     	  if (parseInt(salesquantity) > parseInt(curquantity)) {
     		  layer.msg("销售数量不得超过当前库存量");
     		  return ;
     	  }
     	  
-    	  var userName = '[[${session.user.name}]]';
-    	  console.log(userName);
-    	  $('#user_add').val(userName);
+    	  var id = '[[${session.user.id}]]';
+    	  $('#user_add').val(id);
     	  
     	  $.ajax({
      		 type : "POST",
-     		 url : "/med/sales/save.do",
+     		 url : basePath + "/sales/save.do",
      		 data : $('#form_add').serialize(),
      		 success : function(result) {
-     		//	 console.log(result);//打印服务端返回的数据(调试用)
      			 if (result.resultCode == 200) {
-     				 $(location).attr('href', '/med/sales/info.do');
+     				 layer.msg("添加成功");
+     				 $(location).attr('href', basePath + '/sales/info.do');
                   };
      		 },
      		 error : function() {
@@ -515,7 +520,7 @@
     	  // 获取当前下拉框选项
 		  curMed = $('#med_filter').val();
     	  
-    	  var newUrl = '/med/sales/data_source.do?pageNum=1&condition=' + condition;
+    	  var newUrl = basePath + '/sales/data_source.do?pageNum=1&condition=' + condition;
     	  table.ajax.url(newUrl).load();
     	  
     	  $('#filter').modal('hide');
@@ -526,7 +531,7 @@
 		  
 		  $.ajax({
     		  type : "POST",
-    		  url : "/med/medicine/find_name.do",
+    		  url : basePath + "/medicine/find_name.do",
     		  async : false,
     		  success : function(result) {
     			  var data = result.data;
@@ -543,7 +548,7 @@
 	  // 显示全部数据
       function sales_refresh() {
     	  
-    	  var newUrl = '/med/sales/data_source.do?pageNum=1';
+    	  var newUrl = basePath + '/sales/data_source.do?pageNum=1';
     	  table.ajax.url(newUrl).load();
     	  
     	  document.getElementById("form_filter").reset(); 
@@ -558,14 +563,14 @@
       function sales_delete() {
     	  $.ajax({
      		 type : "POST",
-     		 url : "/med/sales/delete.do",
+     		 url : basePath + "/sales/delete.do",
      		 data : {
      			id : curDelId 
      		 },
      		 success : function(result) {
      		//	 console.log(result);//打印服务端返回的数据(调试用)
      			 if (result.resultCode == 200) {
-     				 $(location).attr('href', '/med/sales/info.do');
+     				 $(location).attr('href', basePath + '/sales/info.do');
                   };
      		 },
      		 error : function() {
@@ -576,7 +581,7 @@
       
       function pageChange(pageNum) {
       	
-    	  var newUrl = '/med/sales/data_source.do?pageNum=' + pageNum;
+    	  var newUrl = basePath + '/sales/data_source.do?pageNum=' + pageNum;
     	  if (condition != null && condition != "")
     		  newUrl += "&condition = " + condition;
     	  table.ajax.url(newUrl).load(function(json){
@@ -594,11 +599,11 @@
       function exportToFile() {
     	  var val = $('input:radio[name="exportOptions"]:checked').val();
     	  if (val == "pdf")
-    		window.location.href = "/med/sales/toPdf.do?fileName=销售记录";
+    		window.location.href = basePath + "/sales/toPdf.do?fileName=销售记录";
     	  if (val == "excel1")
-        	window.location.href = "/med/sales/toExcel.do?fileName=销售记录&suffix=xls";
+        	window.location.href = basePath + "/sales/toExcel.do?fileName=销售记录&suffix=xls";
     	  if (val == "excel2")
-    	  	window.location.href = "/med/sales/toExcel.do?fileName=销售记录&suffix=xlsx";
+    	  	window.location.href = basePath + "/sales/toExcel.do?fileName=销售记录&suffix=xlsx";
     	  
     	  // 隐藏模态框 
     	  $('#export').modal('toggle');

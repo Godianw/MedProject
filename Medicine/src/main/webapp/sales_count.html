@@ -91,7 +91,7 @@
         	if (select == 1) {
         		// 异步加载数据
         		$.ajax({
-        			url: '/med/salesCount/monthInfo.do',
+        			url: basePath + '/salesCount/monthInfo.do',
         			type: 'POST',
         			success: function(result) {
         				
@@ -178,7 +178,7 @@
 			if (select == 2) {
 				// 异步加载数据
 				$.ajax({
-					url : '/med/salesCount/yearInfo.do',
+					url : basePath + '/salesCount/yearInfo.do',
 					type : 'POST',
 					success : function(result) {
 						var newOption = {

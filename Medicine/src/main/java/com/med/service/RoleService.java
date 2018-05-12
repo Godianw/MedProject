@@ -193,7 +193,7 @@ public class RoleService {
 	 */
 	public List getPrivTreeData() {
 		
-		return getSubPriv(0);
+		return getSubPriv(0, true);
 	}
 	
 	/**
@@ -201,18 +201,24 @@ public class RoleService {
 	 * @param id
 	 * @return
 	 */
-	private List<Map> getSubPriv(int id) {
+	private List<Map> getSubPriv(int id, boolean unselectable) {
 		List<Map> privList = new ArrayList<Map>();
 		List<Privilege> menuList = 
 				roleDao.findAllPrivileges("WHERE pid = " + id);
 		if (menuList == null) 
 			return null;
+		boolean selectable = true;
 		for (Privilege privilege : menuList) {
+			selectable = true;
 			Map<String, Object> menuMap = 
 					new HashMap<String, Object>();
 			menuMap.put("title", privilege.getContent());
 			menuMap.put("key", privilege.getId());
-			List subPrivList = getSubPriv(privilege.getId());
+			if (!unselectable || "系统管理".equals(privilege.getContent())) {
+				menuMap.put("unselectable", true);
+				selectable = false;
+			}
+			List subPrivList = getSubPriv(privilege.getId(), selectable);
 			if (subPrivList != null) {
 				menuMap.put("expand", true);
 				menuMap.put("children", subPrivList);

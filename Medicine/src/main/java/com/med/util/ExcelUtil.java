@@ -1,11 +1,14 @@
 package com.med.util;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -16,6 +19,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -25,21 +29,10 @@ import com.med.exception.DataInvalidException;
 /**
  * Excel工具类
  * @author Runtime
- * @date 2018/1/17
- * @version v1.0
+ * @date 2018/4/6
+ * @version v1.2
  */
 public class ExcelUtil {
-	
-	// 文件名
-	private String fileName;	
-	// 表格标题
-	private String tableTitle;
-	// 列名
-	private String[] columnName;
-	// 表格数据
-	private List<List> dataList = new ArrayList<List>();
-	// 文件后缀类型
-	private ExcelSuffix suffix;
 	
 	public enum ExcelSuffix {
 		XLS,	// HSSF
@@ -47,36 +40,67 @@ public class ExcelUtil {
 	}
 	
 	/**
-	 * 构造器
-	 * @param fileName
-	 * @param tableTitle
-	 * @param columnName
-	 * @param dataList
-	 * @param suffix
+	 * 从excel中读取数据并保存到数组集合中
+	 * @param input
+	 * @return
+	 * @throws EncryptedDocumentException
+	 * @throws InvalidFormatException
+	 * @throws IOException
 	 */
-	@SuppressWarnings("rawtypes")
-	public ExcelUtil(String fileName, String tableTitle, 
-			String[] columnName, List<List> dataList, 
-			ExcelSuffix suffix) {
-		this.fileName = fileName;
-		this.tableTitle = tableTitle;
-		this.columnName = columnName;
-		this.dataList = dataList;
-		this.suffix = suffix;
+	public List<List<Object>> readFromExcel(InputStream input) 
+			throws EncryptedDocumentException, 
+			InvalidFormatException, IOException {
+		// 使用WorkbookFactory+File的方式读取工作簿，占用更小内存
+		Workbook workbook = WorkbookFactory.create(input);
+		Sheet sheet = null;
+		List<List<Object>> rowList = new ArrayList<List<Object>>();
+		// 读取所有工作表
+		for (int i = 0; i < workbook.getNumberOfSheets(); ++ i) {
+			sheet = workbook.getSheetAt(i);
+			// 获取除了标题行之外的所有行
+			for (int j = 1; j <= sheet.getLastRowNum(); ++ j) {
+				Row row = sheet.getRow(j);
+				if (row != null) {
+					List<Object> cellList = new ArrayList<Object>();
+					// 获取改行的所有列
+					for (int k = 0; k < row.getLastCellNum(); ++ k) {
+						Object obj = row.getCell(k);
+						if (obj != null) {
+							cellList.add(obj);
+						} else {
+							cellList.add("");
+						}
+					}
+					rowList.add(cellList);
+				}
+			}
+		}
+		
+		return rowList;
 	}
 	
 	/**
 	 * 将Excel写入输出流对象中
-	 * @param out 输出流对象
+	 * @param tableTitle 表格名
+	 * @param columnName 各个列的列名
+	 * @param dataList 表格数据
+	 * @param suffix 文件后缀
+	 * @param out 文件输出流
 	 * @throws IOException
 	 */
-	public void writeOutExcel(OutputStream out) throws IOException {
+	@SuppressWarnings("rawtypes")
+	public void writeOutExcel(
+			String tableTitle, 
+			String[] columnName, 
+			List<List> dataList, 
+			ExcelSuffix suffix,
+			OutputStream out) throws IOException {
 		
 		// 导出excel之前先检查表格数据的有效性
-		checkDataBrforeExport();
+		checkDataBeforeExport(columnName, dataList);
 		
 		// 创建工作簿
-		Workbook workbook = getNewWorkbook();
+		Workbook workbook = getNewWorkbook(suffix);
 		// 创建工作表
 		String safeName = WorkbookUtil.createSafeSheetName(tableTitle);
 		Sheet sheet = workbook.createSheet(safeName);	
@@ -136,7 +160,7 @@ public class ExcelUtil {
 	 * 获取新的工作簿
 	 * @return 工作簿对象
 	 */
-	protected Workbook getNewWorkbook() {
+	protected Workbook getNewWorkbook(ExcelSuffix suffix) {
 		
 		if (ExcelSuffix.XLS == suffix) 
 			return new HSSFWorkbook();
@@ -147,7 +171,10 @@ public class ExcelUtil {
 	/**
 	 * 在导出excel之前检查数据是否有效
 	 */
-	protected void checkDataBrforeExport() {
+	@SuppressWarnings("rawtypes")
+	protected void checkDataBeforeExport(
+			String[] columnName,
+			List dataList) {
 
 		if (columnName.length <= 0)
 			throw new DataInvalidException("columnName is not filled");
@@ -287,9 +314,9 @@ public class ExcelUtil {
 		if (value instanceof Integer) {
 			cell.setCellValue((Integer) value);
 		} else if (value instanceof Double) {
-			cell.setCellValue((Double) value);
+			cell.setCellValue(Double.parseDouble(value.toString()));
 		} else if (value instanceof Float) {
-			cell.setCellValue((Float) value);
+			cell.setCellValue(Double.parseDouble(value.toString()));
 		} else if (value instanceof Long) {
 			cell.setCellValue((Long) value);
 		} else if (value instanceof Boolean) {

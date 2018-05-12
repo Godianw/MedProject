@@ -10,8 +10,10 @@
 
 	  <div id="login-page">
 	  	<div class="container">
-	  	
-		      <form class="form-login" action="/med/login.do"
+	  	    <h2 style="color:white;">药品进销存管理系统</h2>
+          
+		      <form class="form-login" th:action="@{/login.do}"
+                action="/med/login.do"
                 onsubmit="return validate_form(this)">
 		        <h2 class="form-login-heading">用户登录</h2>
 		        <div class="login-wrap">
@@ -86,7 +88,7 @@
       rel="stylesheet" type="text/css">
     
     <script>
-        $.backstretch("/med/assets/img/login-bg.jpg", {speed: 500});
+        $.backstretch(basePath + "/assets/img/login-bg.jpg", {speed: 500});
         
         $(function(){
         	// 自动填写表单

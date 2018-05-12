@@ -49,6 +49,7 @@ public class InventoryService {
 			resultMap.put("quantity", Integer.valueOf(obj[2].toString()));
 			resultMap.put("warningQuantity", 
 					Integer.valueOf(obj[3].toString()));
+			resultMap.put("unit", obj[4].toString());
 			resultList.add(resultMap);
 		}
 		
@@ -149,11 +150,13 @@ public class InventoryService {
 	 * @param id
 	 * @return
 	 */
-	public Integer findQuantity(Integer id) {
+	public String findQuantity(Integer id) {
 		
 		if (id == null)
 			return null;
-		else
-			return inventoryDao.findQuantity(id);
+		else {
+			Map<String, Object> map = inventoryDao.findOne(id);
+			return map.get("quantity").toString() + map.get("unit").toString();
+		}
 	}
 }

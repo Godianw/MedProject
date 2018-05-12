@@ -2,7 +2,6 @@ package com.med.util;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.itextpdf.io.font.PdfEncodings;
@@ -23,45 +22,28 @@ import com.med.exception.DataInvalidException;
 /**
  * pdf工具类
  * @author Runtime
- * @date 2018/1/17
- * @version v1.0
+ * @date 2018/4/6
+ * @version v1.2
  */
 public class PdfUtil {
-
-	// 文件名
-	private String fileName;
-	// 表格标题
-	private String tableTitle;
-	// 列名
-	private String[] columnName;
-	// 表格数据
-	private List<List> dataList = new ArrayList<List>();
-	
-	/**
-	 * 构造器
-	 * @param fileName
-	 * @param tableTitle
-	 * @param columnName
-	 * @param dataList
-	 */
-	public PdfUtil(String fileName, String tableTitle, 
-			String[] columnName, List<List> dataList) {
-		this.fileName = fileName;
-		this.tableTitle = tableTitle;
-		this.columnName = columnName;
-		this.dataList = dataList;
-	}
 	
 	/**
 	 * 将pdf写入到输出流中
-	 * @param out
+	 * @param tableTitle 表格名
+	 * @param columnName 各个列的列名
+	 * @param dataList 表格数据
+	 * @param out 文件输出流
 	 * @throws IOException
 	 */
-	@SuppressWarnings("unchecked")
-	public void writeOutPdf(OutputStream out) throws IOException {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void writeOutPdf(
+			String tableTitle, 
+			String[] columnName, 
+			List<List> dataList,
+			OutputStream out) throws IOException {
 		
 		// 导出pdf之前先检查表格数据的有效性
-		checkDataBrforeExport();
+		checkDataBeforeExport(columnName, dataList);
 		
 		PdfDocument pdfDoc = new PdfDocument(new PdfWriter(out));
 		// 构建文档对象
@@ -114,7 +96,10 @@ public class PdfUtil {
 	/**
 	 * 在导出pdf之前检查数据是否有效
 	 */
-	protected void checkDataBrforeExport() {
+	@SuppressWarnings("rawtypes")
+	protected void checkDataBeforeExport(
+			String[] columnName,
+			List dataList) {
 
 		if (columnName.length <= 0)
 			throw new DataInvalidException("columnName is not filled");

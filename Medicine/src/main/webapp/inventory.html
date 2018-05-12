@@ -142,6 +142,7 @@
                   <input type="number" class="myform-control"
                     value="100" min="0" step="100" name="quantity"
                     id="quantity_inbound">
+                  <label id="unit_inbound"></label>
                 </div>
               </div>    
                
@@ -203,6 +204,7 @@
                   <input type="number" class="myform-control"
                     value="100" min="0" step="100" name="quantity"
                     id="quantity_outbound">
+                  <label id="unit_outbound"></label>
                 </div>
               </div>    
                
@@ -342,7 +344,7 @@
     	  table = $('#tbl_inventory').DataTable({
     		  // 国际化
     	     language: {
-    	    	url: "/med/common/language-zh-CN.txt",
+    	    	url: basePath + "/common/language-zh-CN.txt",
     		 },
     		 /* dom */
     		 dom: 'lrt<"pull-right"i>',	// 默认lfrtip
@@ -361,7 +363,7 @@
     		 serverSide: true,
     		 // 数据来源（包括处理分页，排序，过滤） ，即url，action，接口，等等
     		 ajax: {
-    			 url: '/med/inventory/data_source.do?pageNum=1',
+    			 url: basePath + '/inventory/data_source.do?pageNum=1',
     			 type: 'POST',
     			 // 降低columns[i][search][value]数组的维度
     			 data : function(data) {  
@@ -469,6 +471,7 @@
     	  var medId = $('#name_inbound').val();
     	  if (medId == null || medId == "") {
     		  $('#div_inbound').hide();
+    		  $('#unit_inbound').html('');
     		  return ;
     	  }
     	  
@@ -476,11 +479,14 @@
     	  
     	  $.ajax({
     		  type : "POST",
-    		  url : "/med/inventory/find_quantity.do",
+    		  url : basePath + "/inventory/find_quantity.do",
     		  data : {
     			  id : medId
     		  },
     		  success : function(quantity) {
+    			  $('#unit_inbound').html(
+    					  quantity.substring(
+    						quantity.length - 1, quantity.length));
     			  $('#curquantity_inbound').html(quantity);
     		  },
     		  error : function() {
@@ -495,6 +501,7 @@
     	  var medId = $('#name_outbound').val();
     	  if (medId == null || medId == "") {
     		  $('#div_outbound').hide();
+    		  $('#unit_outbound').html('');
     		  return ;
     	  }
     	  
@@ -502,11 +509,14 @@
     	  
     	  $.ajax({
     		  type : "POST",
-    		  url : "/med/inventory/find_quantity.do",
+    		  url : basePath + "/inventory/find_quantity.do",
     		  data : {
     			  id : medId
     		  },
     		  success : function(quantity) {
+    			  $('#unit_outbound').html(
+    					  quantity.substring(
+    						quantity.length - 1, quantity.length));
     			  $('#curquantity_outbound').html(quantity);
     		  },
     		  error : function() {
@@ -520,7 +530,7 @@
 		  
 		  $.ajax({
     		  type : "POST",
-    		  url : "/med/medicine/find_name.do",
+    		  url : basePath + "/medicine/find_name.do",
     		  async : false,
     		  success : function(result) {
     			  var data = result.data;
@@ -547,7 +557,7 @@
     		  condition += " AND name LIKE '%25" + name + "%25'";
     	  }
     	  
-    	  var newUrl = '/med/inventory/data_source.do?pageNum=1&condition=' + condition;
+    	  var newUrl = basePath + '/inventory/data_source.do?pageNum=1&condition=' + condition;
     	  table.ajax.url(newUrl).load();
     	  
     	  $('#filter').modal('hide');
@@ -558,7 +568,7 @@
 		  // 获取后台数据
     	  $.ajax({
      		 type : "POST",
-     		 url : "/med/inventory/find.do",
+     		 url : basePath + "/inventory/find.do",
      		 data : {
      			 id : i 
      		 },
@@ -582,14 +592,16 @@
     	  
     	  $.ajax({
     		  type : "POST",
-    		  url : "/med/inventory/update_warning.do",
+    		  url : basePath + "inventory/update_warning.do",
     		  data : {
     			  id : $('#id_edit').val(),
     			  warningQuantity : $('#warningQuantity_edit').val()
     		  },
     		  success : function(result) {
     			  if (result.resultCode == 200) {
-     				 $(location).attr('href', '/med/inventory/info.do');
+    				  layer.msg("修改成功");
+     				  $(location).attr('href', basePath 
+     						  + '/med/inventory/info.do');
                   };
      		  },
      		  error : function() {
@@ -605,7 +617,7 @@
     	  
     	  $.ajax({
     		 type : "POST",
-    		 url : "/med/inventory/update_quantity.do",
+    		 url : basePath + "/inventory/update_quantity.do",
     		 data : {
     			 id : $('#name_inbound').val(),
     			 quantity : $('#quantity_inbound').val(),
@@ -613,7 +625,8 @@
     		 },
     		 success : function(result) {
    			     if (result.resultCode == 200) {
-    				 $(location).attr('href', '/med/inventory/info.do');
+   			    	layer.msg("药品入库成功");
+    				 $(location).attr('href', basePath + '/inventory/info.do');
                  };
     		  },
     		  error : function() {
@@ -630,6 +643,7 @@
     	  
     	  var outquantity = $('#quantity_outbound').val();
     	  var curquantity = $('#curquantity_outbound').text();
+    	  curquantity = curquantity.substring(0, curquantity.length - 1);
     	  
     	  if (parseInt(outquantity) > parseInt(curquantity)) {
     		  layer.msg("出库数量不得超过当前库存量");
@@ -638,7 +652,7 @@
     	  
     	  $.ajax({
      		 type : "POST",
-     		 url : "/med/inventory/update_quantity.do",
+     		 url : basePath + "/inventory/update_quantity.do",
      		 data : {
      			 id : $('#name_outbound').val(),
      			 quantity : outquantity,
@@ -646,7 +660,8 @@
      		 },
      		 success : function(result) {
     			  if (result.resultCode == 200) {
-     				 $(location).attr('href', '/med/inventory/info.do');
+    				 layer.msg("药品出库成功");
+     				 $(location).attr('href', basePath + '/inventory/info.do');
                   };
      		  },
      		  error : function() {
@@ -658,7 +673,7 @@
 	  // 显示全部数据
       function inventory_refresh() {
     	  
-    	  var newUrl = '/med/inventory/data_source.do?pageNum=1';
+    	  var newUrl = basePath + '/inventory/data_source.do?pageNum=1';
     	  table.ajax.url(newUrl).load();
     	  
     	  document.getElementById("form_filter").reset(); 
@@ -666,7 +681,7 @@
 
       function pageChange(pageNum) {
     	
-    	  var newUrl = '/med/inventory/data_source.do?pageNum=' + pageNum;
+    	  var newUrl = basePath + '/inventory/data_source.do?pageNum=' + pageNum;
     	  if (condition != null && condition != "")
     		  newUrl += "&condition = " + condition;
     	  table.ajax.url(newUrl).load(function(json){

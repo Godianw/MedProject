@@ -262,7 +262,7 @@
     	  table = $('#tbl_inventory_history').DataTable({
     		  // 国际化
     	     language: {
-    	    	url: "/med/common/language-zh-CN.txt",
+    	    	url: basePath + "/common/language-zh-CN.txt",
     		 },
     		 /* dom */
     		 dom: 'lrt<"pull-right"i>',	// 默认lfrtip
@@ -281,7 +281,7 @@
     		 serverSide: true,
     		 // 数据来源（包括处理分页，排序，过滤） ，即url，action，接口，等等
     		 ajax: {
-    			 url: '/med/inventory_history/data_source.do?pageNum=1',
+    			 url: basePath + '/inventory_history/data_source.do?pageNum=1',
     			 type: 'POST',
     			 // 降低columns[i][search][value]数组的维度
     			 data : function(data) {  
@@ -384,7 +384,7 @@
     		  condition += " AND optype = " + optype;
     	  }
     	  
-    	  var newUrl = '/med/inventory_history/data_source.do?pageNum=1&condition=' + condition;
+    	  var newUrl = basePath + '/inventory_history/data_source.do?pageNum=1&condition=' + condition;
     	  table.ajax.url(newUrl).load();
     	  
     	  $('#filter').modal('hide');
@@ -405,11 +405,11 @@
       function exportToFile() {
     	  var val = $('input:radio[name="exportOptions"]:checked').val();
     	  if (val == "pdf")
-    		window.location.href = "/med/inventory_history/toPdf.do?fileName=库存操作历史记录";
+    		window.location.href = basePath + "/inventory_history/toPdf.do?fileName=库存操作历史记录";
     	  if (val == "excel1")
-        	window.location.href = "/med/inventory_history/toExcel.do?fileName=库存操作历史记录&suffix=xls";
+        	window.location.href = basePath + "/inventory_history/toExcel.do?fileName=库存操作历史记录&suffix=xls";
     	  if (val == "excel2")
-    	  	window.location.href = "/med/inventory_history/toExcel.do?fileName=库存操作历史记录&suffix=xlsx";
+    	  	window.location.href = basePath + "/inventory_history/toExcel.do?fileName=库存操作历史记录&suffix=xlsx";
     	  
     	  // 隐藏模态框 
     	  $('#export').modal('toggle');
@@ -418,7 +418,7 @@
       // 显示全部数据
       function ih_refresh() {
     	  
-    	  var newUrl = '/med/inventory_history/data_source.do?pageNum=1';
+    	  var newUrl = basePath + '/inventory_history/data_source.do?pageNum=1';
     	  table.ajax.url(newUrl).load();
     	  
     	  document.getElementById("form_filter").reset(); 
@@ -426,7 +426,7 @@
    	  
       function pageChange(pageNum) {
     	
-    	  var newUrl = '/med/inventory_history/data_source.do?pageNum=' + pageNum;
+    	  var newUrl = basePath + '/inventory_history/data_source.do?pageNum=' + pageNum;
     	  if (condition != null && condition != "")
     		  newUrl += "&condition = " + condition;
     	  table.ajax.url(newUrl).load(function(json){
