@@ -1,2 +1,7 @@
 # MedProject
-an unfinished project
+# 药品进销存管理系统
+## 功能说明：
+1）基础信息管理
+2）销售管理
+3）库存管理
+4）用户管理
